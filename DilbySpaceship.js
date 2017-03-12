@@ -8,15 +8,16 @@ class DilbySpaceship {
 		this.body = new Cylinder(gl, 0.212, .212, 0.6, 4);
 		this.wing1 = new Cylinder(gl, 0.212, .1, .25, 4);
 		this.wing2 = new Cylinder(gl, 0.1, .212, .25, 4);
-		this.thruster1 = new Torus(gl, .05, .04, 12, 12);
-		this.thruster2 = new Torus(gl, .05, .04, 12, 12);
-		this.rocket1 = new Cylinder(gl, 0.2, 0.2, .5, 12);
-		this.rocket2 = new Cylinder(gl, 0.2, 0.2, .5, 12);
-		this.rocket2 = new Cylinder(gl, 0.2, 0.2, .5, 12);
-		this.rocket2 = new Cylinder(gl, 0.2, 0.2, .5, 12);
-
-
-
+		this.wing3 = new Cylinder(gl, 0.212, .1, .25, 4);
+		this.wing4 = new Cylinder(gl, 0.1, .212, .25, 4);
+		this.mount1 = new Cylinder(gl, 0.212, .1, .25, 4);
+		this.mount2 = new Cylinder(gl, 0.1, .212, .25, 4);
+		this.thruster1 = new Torus(gl, .05, .02, 12, 12);
+		this.thruster2 = new Torus(gl, .05, .02, 12, 12);
+		this.rocket1 = new Cylinder(gl, 0.05, 0.05, .5, 12);
+		this.rocket2 = new Cylinder(gl, 0.05, 0.05, .5, 12);
+		this.rocket2 = new Cylinder(gl, 0.05, 0.05, .5, 12);
+		this.rocket2 = new Cylinder(gl, 0.05, 0.05, .5, 12);
 
 		//move bridge location    
 		let moveAgainstX = vec3.fromValues (-0.3, 0, 0);
@@ -96,7 +97,7 @@ class DilbySpaceship {
 		mat4.translate (this.wing2Transform, this.wing2Transform, moveAgainstX);
 			
 		//move wing2 location on y axis
-		moveWithY = vec3.fromValues(0, -.279, 0);
+		moveWithY = vec3.fromValues(0, -.278, 0);
 		this.wing2Transform2 = mat4.create();
 		mat4.translate (this.wing2Transform2, this.wing2Transform2, moveWithY);
 		mat4.multiply (this.wing2Transform, this.wing2Transform, this.wing2Transform2);	
@@ -114,6 +115,154 @@ class DilbySpaceship {
 		axisRot = vec3.fromValues(0, 0, 1);
 		mat4.fromRotation(this.wing2Transform4, angle, axisRot);
 		mat4.multiply (this.wing2Transform, this.wing2Transform, this.wing2Transform4);
+		//--------------------------------------------------------------------------------------	
+		
+		//move wing3 location on x axis	
+		moveAgainstX = vec3.fromValues (0.35, 0, 0);
+		this.wing3Transform = mat4.create();
+		mat4.translate (this.wing3Transform, this.wing3Transform, moveAgainstX);
+			
+		//move wing3 location on y axis
+		moveWithY = vec3.fromValues(0, .418, 0);
+		this.wing3Transform2 = mat4.create();
+		mat4.translate (this.wing3Transform2, this.wing3Transform2, moveWithY);
+		mat4.multiply (this.wing3Transform, this.wing3Transform, this.wing3Transform2);	
+		
+		//rotate wing3 location on x axis
+		this.wing3Transform3 = mat4.create();
+		angle = 0.5 * Math.PI;
+		axisRot = vec3.fromValues(1, 0, 0);	
+		mat4.fromRotation(this.wing3Transform3, angle, axisRot);
+		mat4.multiply (this.wing3Transform, this.wing3Transform, this.wing3Transform3);
+		
+		//rotate wing3 location on z axis
+		this.wing3Transform4 = mat4.create();
+		angle = .25 * Math.PI;
+		axisRot = vec3.fromValues(0, 0, 1);
+		mat4.fromRotation(this.wing3Transform4, angle, axisRot);
+		mat4.multiply (this.wing3Transform, this.wing3Transform, this.wing3Transform4);
+		//--------------------------------------------------------------------------------------	
+		
+		//move wing4 location on x axis	
+		moveAgainstX = vec3.fromValues (0.35, 0, 0);
+		this.wing4Transform = mat4.create();
+		mat4.translate (this.wing4Transform, this.wing4Transform, moveAgainstX);
+			
+		//move wing4 location on y axis
+		moveWithY = vec3.fromValues(0, -.418, 0);
+		this.wing4Transform2 = mat4.create();
+		mat4.translate (this.wing4Transform2, this.wing4Transform2, moveWithY);
+		mat4.multiply (this.wing4Transform, this.wing4Transform, this.wing4Transform2);	
+		
+		//rotate wing1 location on x axis
+		this.wing4Transform3 = mat4.create();
+		angle = 0.5 * Math.PI;
+		axisRot = vec3.fromValues(1, 0, 0);	
+		mat4.fromRotation(this.wing4Transform3, angle, axisRot);
+		mat4.multiply (this.wing4Transform, this.wing4Transform, this.wing4Transform3);
+		
+		//rotate wing1 location on z axis
+		this.wing4Transform4 = mat4.create();
+		angle = .25 * Math.PI;
+		axisRot = vec3.fromValues(0, 0, 1);
+		mat4.fromRotation(this.wing4Transform4, angle, axisRot);
+		mat4.multiply (this.wing4Transform, this.wing4Transform, this.wing4Transform4);
+		//--------------------------------------------------------------------------------------	
+		
+		//move thruster location on x axis	
+		moveWithX = vec3.fromValues (0.495, 0, 0);
+		this.thruster1Transform = mat4.create();
+		mat4.translate (this.thruster1Transform, this.thruster1Transform, moveWithX);
+			
+		//move thruster location on y axis
+		moveWithY = vec3.fromValues(0, -0.15, 0);
+		this.thruster1Transform2 = mat4.create();
+		mat4.translate (this.thruster1Transform2, this.thruster1Transform2, moveWithY);
+		mat4.multiply (this.thruster1Transform, this.thruster1Transform, this.thruster1Transform2);	
+		
+		//rotate thruster location on x axis
+		this.thruster1Transform3 = mat4.create();
+		angle = 0.0 * Math.PI;
+		axisRot = vec3.fromValues(1, 0, 0);	
+		mat4.fromRotation(this.thruster1Transform3, angle, axisRot);
+		mat4.multiply (this.thruster1Transform, this.thruster1Transform, this.thruster1Transform3);
+		
+		//rotate thruster location on z axis
+		this.thruster1Transform4 = mat4.create();
+		angle = 0.5 * Math.PI;
+		axisRot = vec3.fromValues(0, 1, 0);
+		mat4.fromRotation(this.thruster1Transform4, angle, axisRot);
+		mat4.multiply (this.thruster1Transform, this.thruster1Transform, this.thruster1Transform4);
+		//--------------------------------------------------------------------------------------	
+		
+		//move thruster location on x axis	
+		moveWithX = vec3.fromValues (0.495, 0, 0);
+		this.thruster2Transform = mat4.create();
+		mat4.translate (this.thruster2Transform, this.thruster2Transform, moveWithX);
+			
+		//move thruster location on y axis
+		moveWithY = vec3.fromValues(0, 0.15, 0);
+		this.thruster2Transform2 = mat4.create();
+		mat4.translate (this.thruster2Transform2, this.thruster2Transform2, moveWithY);
+		mat4.multiply (this.thruster2Transform, this.thruster2Transform, this.thruster2Transform2);	
+		
+		//rotate thruster location on x axis
+		this.thruster2Transform3 = mat4.create();
+		angle = 0.0 * Math.PI;
+		axisRot = vec3.fromValues(1, 0, 0);	
+		mat4.fromRotation(this.thruster2Transform3, angle, axisRot);
+		mat4.multiply (this.thruster2Transform, this.thruster2Transform, this.thruster2Transform3);
+		
+		//rotate thruster location on z axis
+		this.thruster2Transform4 = mat4.create();
+		angle = 0.5 * Math.PI;
+		axisRot = vec3.fromValues(0, 1, 0);
+		mat4.fromRotation(this.thruster2Transform4, angle, axisRot);
+		mat4.multiply (this.thruster2Transform, this.thruster2Transform, this.thruster2Transform4);
+		//--------------------------------------------------------------------------------------	
+		
+		//move thruster location on x axis	
+		moveWithX = vec3.fromValues (0.495, 0, 0);
+		this.rocket1Transform = mat4.create();
+		mat4.translate (this.rocket1Transform, this.rocket1Transform, moveWithX);
+			
+		//move thruster location on y axis
+		moveWithY = vec3.fromValues(0, 0.15, 0);
+		this.rocket1Transform2 = mat4.create();
+		mat4.translate (this.rocket1Transform2, this.rocket1Transform2, moveWithY);
+		mat4.multiply (this.rocket1Transform, this.rocket1Transform, this.rocket1Transform2);	
+		
+		//rotate thruster location on x axis
+		this.rocket1Transform3 = mat4.create();
+		angle = 0.0 * Math.PI;
+		axisRot = vec3.fromValues(1, 0, 0);	
+		mat4.fromRotation(this.rocket1Transform3, angle, axisRot);
+		mat4.multiply (this.rocket1Transform, this.rocket1Transform, this.rocket1Transform3);
+		
+		//rotate thruster location on z axis
+		this.rocket1Transform4 = mat4.create();
+		angle = 0.5 * Math.PI;
+		axisRot = vec3.fromValues(0, 1, 0);
+		mat4.fromRotation(this.rocket1Transform4, angle, axisRot);
+		mat4.multiply (this.rocket1Transform, this.rocket1Transform, this.rocket1Transform4);
+		
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		this.tmp = mat4.create();
 	}
 
@@ -132,5 +281,21 @@ class DilbySpaceship {
 		
 		mat4.mul (this.tmp, coordFrame, this.wing2Transform);
 		this.wing2.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+		
+		mat4.mul (this.tmp, coordFrame, this.wing3Transform);
+		this.wing3.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+		
+		mat4.mul (this.tmp, coordFrame, this.wing4Transform);
+		this.wing4.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+		
+		mat4.mul (this.tmp, coordFrame, this.thruster1Transform);
+		this.thruster1.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+
+		mat4.mul (this.tmp, coordFrame, this.thruster2Transform);
+		this.thruster2.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+		
+		mat4.mul (this.tmp, coordFrame, this.rocket1Transform);
+		this.rocket1.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+
 	}
 }
