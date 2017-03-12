@@ -16,8 +16,8 @@ class DilbySpaceship {
 		this.thruster2 = new Torus(gl, .05, .02, 12, 12);
 		this.rocket1 = new Cylinder(gl, 0.05, 0.05, .5, 12);
 		this.rocket2 = new Cylinder(gl, 0.05, 0.05, .5, 12);
-		this.rocket2 = new Cylinder(gl, 0.05, 0.05, .5, 12);
-		this.rocket2 = new Cylinder(gl, 0.05, 0.05, .5, 12);
+		this.rocket3 = new Cylinder(gl, 0.05, 0.05, .5, 12);
+		this.rocket4 = new Cylinder(gl, 0.05, 0.05, .5, 12);
 
 		//move bridge location    
 		let moveAgainstX = vec3.fromValues (-0.3, 0, 0);
@@ -349,6 +349,70 @@ class DilbySpaceship {
 		axisRot = vec3.fromValues(0, 1, 0);
 		mat4.fromRotation(this.rocket2Transform5, angle, axisRot);
 		mat4.multiply (this.rocket2Transform, this.rocket2Transform, this.rocket2Transform5);
+		//--------------------------------------------------------------------------------------	
+		
+		//move rocket3 location on x axis	
+		moveWithX = vec3.fromValues (0.35, 0, 0);
+		this.rocket3Transform = mat4.create();
+		mat4.translate (this.rocket3Transform, this.rocket3Transform, moveWithX);
+			
+		//move rocket1 location on y axis
+		moveWithY = vec3.fromValues(0, -0.58, 0);
+		this.rocket3Transform2 = mat4.create();
+		mat4.translate (this.rocket3Transform2, this.rocket3Transform2, moveWithY);
+		mat4.multiply (this.rocket3Transform, this.rocket3Transform, this.rocket3Transform2);	
+		
+		//move rocket1 location on z axis
+		moveWithZ = vec3.fromValues(0, 0.0, 0.075);
+		this.rocket3Transform3 = mat4.create();
+		mat4.translate (this.rocket3Transform3, this.rocket3Transform3, moveWithZ);
+		mat4.multiply (this.rocket3Transform, this.rocket3Transform, this.rocket3Transform3);	
+		
+		//rotate rocket1 location on x axis
+		this.rocket3Transform4 = mat4.create();
+		angle = 0.0 * Math.PI;
+		axisRot = vec3.fromValues(1, 0, 0);	
+		mat4.fromRotation(this.rocket3Transform4, angle, axisRot);
+		mat4.multiply (this.rocket3Transform, this.rocket3Transform, this.rocket3Transform4);
+		
+		//rotate rocket1 location on z axis
+		this.rocket3Transform5 = mat4.create();
+		angle = 0.5 * Math.PI;
+		axisRot = vec3.fromValues(0, 1, 0);
+		mat4.fromRotation(this.rocket3Transform5, angle, axisRot);
+		mat4.multiply (this.rocket3Transform, this.rocket3Transform, this.rocket3Transform5);
+		//--------------------------------------------------------------------------------------	
+		
+		//move rocket4 location on x axis	
+		moveWithX = vec3.fromValues (0.35, 0, 0);
+		this.rocket4Transform = mat4.create();
+		mat4.translate (this.rocket4Transform, this.rocket4Transform, moveWithX);
+			
+		//move rocket4 location on y axis
+		moveWithY = vec3.fromValues(0, -0.58, 0);
+		this.rocket4Transform2 = mat4.create();
+		mat4.translate (this.rocket4Transform2, this.rocket4Transform2, moveWithY);
+		mat4.multiply (this.rocket4Transform, this.rocket4Transform, this.rocket4Transform2);	
+		
+		//move rocket4 location on z axis
+		moveWithZ = vec3.fromValues(0, 0.0, -0.075);
+		this.rocket4Transform3 = mat4.create();
+		mat4.translate (this.rocket4Transform3, this.rocket4Transform3, moveWithZ);
+		mat4.multiply (this.rocket4Transform, this.rocket4Transform, this.rocket4Transform3);	
+		
+		//rotate rocket2 location on x axis
+		this.rocket4Transform4 = mat4.create();
+		angle = 0.0 * Math.PI;
+		axisRot = vec3.fromValues(1, 0, 0);	
+		mat4.fromRotation(this.rocket4Transform4, angle, axisRot);
+		mat4.multiply (this.rocket4Transform, this.rocket4Transform, this.rocket4Transform4);
+		
+		//rotate rocket2 location on z axis
+		this.rocket4Transform5 = mat4.create();
+		angle = 0.5 * Math.PI;
+		axisRot = vec3.fromValues(0, 1, 0);
+		mat4.fromRotation(this.rocket4Transform5, angle, axisRot);
+		mat4.multiply (this.rocket4Transform, this.rocket4Transform, this.rocket4Transform5);
 		
 		
 
@@ -409,6 +473,12 @@ class DilbySpaceship {
 		
 		mat4.mul (this.tmp, coordFrame, this.rocket2Transform);
 		this.rocket2.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+		
+		mat4.mul (this.tmp, coordFrame, this.rocket3Transform);
+		this.rocket3.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
+		
+		mat4.mul (this.tmp, coordFrame, this.rocket4Transform);
+		this.rocket4.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
 	}
 }
