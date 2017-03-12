@@ -5,8 +5,10 @@
 class Cylinder {
   /* subDiv: number of subdivisions for the circle/cone base */
   constructor (gl, topRadius, botRadius, height, subDiv, col1, col2) {
-    if (typeof col1 === "undefined") col1 = vec3.fromValues(0xff/255, 0x59/255, 0x59/255);
-    if (typeof col2 === "undefined") col2 = vec3.fromValues(0xFF/255, 0xC5/255, 0x6C/255);
+    //if (typeof col1 === "undefined") col1 = vec3.fromValues(0xff/255, 0x59/255, 0x59/255);
+    //if (typeof col2 === "undefined") col2 = vec3.fromValues(0xFF/255, 0xC5/255, 0x6C/255);
+    if (typeof col1 === "undefined") col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
+    if (typeof col2 === "undefined") col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
     let vertices = [];
     let randColor = vec3.create();
     this.vbuff = gl.createBuffer();
