@@ -1,5 +1,5 @@
 /**
- * Reese & Miles De Wind
+ * Created by Hans Dulimarta.
  */
 let modelMat = mat4.create();
 let canvas, paramGroup;
@@ -70,7 +70,11 @@ function drawScene() {
 	break;
     case "rotz":
 	mat4.rotateZ(modelMat, modelMat, Math.PI / 180);
+    case "rotn":
+	break;
     }
+
+
 
     if (obj) {
 	obj.draw(posAttr, colAttr, modelUnif, modelMat);
@@ -114,6 +118,9 @@ function createObject() {
     case 4:
 	let recursiveSphereSubDiv = document.getElementById("recursive-sphere-subdivisions").valueAsNumber;
 	obj = new RecursiveSphere(gl, recursiveSphereSubDiv, undefined, undefined);
+	break;
+    case 5:
+	obj = new Planet(gl,0,0,0,0.8,75,undefined,112421442,1,4,0.5);
 	break;
     case 6:
 	let ringHeight = document.getElementById("ring-height").valueAsNumber;

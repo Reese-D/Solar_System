@@ -9,6 +9,6 @@ varying vec4 varColor;
 
 void main() {
     gl_Position = modelCF * vec4(vertexPos, 1);
-    gl_PointSize = 4.0;
+    gl_PointSize = 3.0;
     varColor = vec4 (vertexCol, 1.0);
 }
