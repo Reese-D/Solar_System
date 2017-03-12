@@ -13,9 +13,9 @@ class Cube {
   constructor (gl, size, subDiv, col1, col2, col3) {
 
     /* if colors are undefined, generate random colors */
-    if (typeof col1 === "undefined") col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
-    if (typeof col2 === "undefined") col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
-    if (typeof col3 === "undefined") col3 = vec3.fromValues(Math.random(), Math.random(), Math.random());
+    if (typeof col1 === "undefined") col1 = vec3.fromValues(0.6, 0.2, 0.2);
+    if (typeof col2 === "undefined") col2 = vec3.fromValues(0.2, 0.2, 0.2);
+    if (typeof col3 === "undefined") col3 = vec3.fromValues(0.2, 0.2, 0.2);
     let randColor = vec3.create();
 
     this.vex = [

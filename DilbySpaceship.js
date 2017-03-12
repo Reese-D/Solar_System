@@ -413,23 +413,6 @@ class DilbySpaceship {
 		axisRot = vec3.fromValues(0, 1, 0);
 		mat4.fromRotation(this.rocket4Transform5, angle, axisRot);
 		mat4.multiply (this.rocket4Transform, this.rocket4Transform, this.rocket4Transform5);
-		
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		this.tmp = mat4.create();
 	}

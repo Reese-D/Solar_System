@@ -15,8 +15,8 @@ class Torus {
   constructor (gl, majRadius, minRadius, majDiv, minDiv, col1, col2) {
 
     /* if colors are undefined, generate random colors */
-    if (typeof col1 === "undefined") col1 = vec3.fromValues(Math.random(), Math.random(), Math.random());
-    if (typeof col2 === "undefined") col2 = vec3.fromValues(Math.random(), Math.random(), Math.random());
+    if (typeof col1 === "undefined") col1 = vec3.fromValues(0.8, 0.8, 1);
+    if (typeof col2 === "undefined") col2 = vec3.fromValues(0.8, 0.8, 1);
     let randColor = vec3.create();
     let vertices = [];
     for (let s = 0; s < minDiv; s++) {
