@@ -28,6 +28,7 @@ function main() {
     axisBuff = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, axisBuff);
     window.addEventListener("resize", resizeHandler, false);
+    window.addEventListener("keypress", keyboardHandler, false);
     ShaderUtils.loadFromFile(gl, "vshader.glsl", "fshader.glsl")
 	.then (prog => {
 	    shaderProg = prog;
@@ -56,7 +57,8 @@ function main() {
 	    gl.uniformMatrix4fv(modelUnif, false, ringCF);
 	    object_hash = {};
 	    object_hash["original spaceship"] = new DilbySpaceship(gl);
-	    object_hash["shield"] = new Planet(gl,0,0,0,0.8,75,undefined,112421442,1,4,0.5);
+	    object_hash["shield"] = new Planet(gl,0,0,0,1.0,75,undefined,112421442,1,4,0.5);
+	   // modelUnif = gl.getUniformLocation(prog, "shield");
 	    addListToView();
 	    //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
 	    coneSpinAngle = 0;
@@ -97,6 +99,42 @@ function resizeHandler() {
 
 }
 
+
+function keyboardHandler(event) {
+  //var unif;
+ // unif = gl.getUniformLocation(getCurrentListObject(), "object");
+ // gl.uniformMatrix4fv(unif, false, ringCF);
+  const transXpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 1, 0, 0));
+  const transXneg = mat4.fromTranslation(mat4.create(), vec3.fromValues(-1, 0, 0));
+  const transYpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 1, 0));
+  const transYneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0,-1, 0));
+  const transZpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0, 1));
+  const transZneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0,-1));
+  switch (event.key) {
+    case "x":
+      mat4.multiply(ringCF, transXneg, ringCF);  // ringCF = Trans * ringCF
+      break;
+    case "X":
+      mat4.multiply(ringCF, transXpos, ringCF);  // ringCF = Trans * ringCF
+      break;
+    case "y":
+      mat4.multiply(ringCF, transYneg, ringCF);  // ringCF = Trans * ringCF
+      break;
+    case "Y":
+      mat4.multiply(ringCF, transYpos, ringCF);  // ringCF = Trans * ringCF
+      break;
+    case "z":
+      mat4.multiply(ringCF, transZneg, ringCF);  // ringCF = Trans * ringCF
+      break;
+    case "Z":
+      mat4.multiply(ringCF, transZpos, ringCF);  // ringCF = Trans * ringCF
+      break;
+  }
+  textOut.innerHTML = "Ring origin (" + ringCF[12].toFixed(1) + ", "
+      + ringCF[13].toFixed(1) + ", "
+      + ringCF[14].toFixed(1) + ")";
+}
+
 function render() {
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
     draw3D();
@@ -105,11 +143,14 @@ function render() {
 }
 
 function drawScene() {
-    var yPos = 0.0;
-    mat4.fromTranslation(tmpMat, vec3.fromValues(0, yPos, 0));
-    mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
-    for(key in object_hash){
-	object_hash[key].draw(posAttr, colAttr, modelUnif, tmpMat);
+    var yPos = -2.0;
+    for(let k=0; k < 3; k++){
+      mat4.fromTranslation(tmpMat, vec3.fromValues(0, yPos, 0));
+      mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+      for(key in object_hash){
+	  object_hash[key].draw(posAttr, colAttr, modelUnif, tmpMat);
+      }
+      yPos += 1.5;
     }
 }
 
