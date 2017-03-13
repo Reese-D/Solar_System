@@ -4,7 +4,7 @@
 
 var gl;
 var glCanvas, textOut;
-var orthoProjMat, persProjMat, viewMat, topViewMat, ringCF;
+var orthoProjMat, persProjMat, viewMat, topViewMat, spaceshipCF;
 var axisBuff, tmpMat;
 var globalAxes;
 
@@ -41,17 +41,21 @@ function main() {
     modelUnif = gl.getUniformLocation(prog, "modelCF");
     gl.enableVertexAttribArray(posAttr);
     gl.enableVertexAttribArray(colAttr);
-    //orthoProjMat = mat4.create();
+    orthoProjMat = mat4.create();
     persProjMat = mat4.create();
     viewMat = mat4.create();
-    
-    ringCF = mat4.create();
+    topViewMat = mat4.create(); 
+    spaceshipCF = mat4.create();
     tmpMat = mat4.create();
     mat4.lookAt(viewMat,
         vec3.fromValues(2, 2, 2), /* eye */
         vec3.fromValues(0, 0, 0), /* focal point */
         vec3.fromValues(0, 0, 1)); /* up */
-    gl.uniformMatrix4fv(modelUnif, false, ringCF);
+    mat4.lookAt(topViewMat,	
+        vec3.fromValues(0, 0, 2),
+        vec3.fromValues(0, 0, 0), 
+        vec3.fromValues(0, 1, 0)); 
+    gl.uniformMatrix4fv(modelUnif, false, spaceshipCF);
 
     obj = new DilbySpaceship(gl);
     //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
@@ -68,8 +72,9 @@ function resizeHandler() {
   if (glCanvas.width > glCanvas.height) { // landscape
     let ratio = 2 * glCanvas.height / glCanvas.width;
     console.log("Landscape mode, ratio is " + ratio);
+    mat4.ortho(orthoProjMat, -3, 3, -3 * ratio, 3*ratio, -5, 5);
     mat4.perspective(persProjMat,
-      Math.PI/3,  // 60 degrees vertical field of view
+      Math.PI/2,  
       1/ratio,    // must be width/height ratio
       1,          // near plane at Z=1
       20);        // far plane at Z=20
@@ -82,16 +87,17 @@ function resizeHandler() {
 function render() {
   gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
   draw3D();
-
+  drawTopView();
   requestAnimationFrame(render);
-}
+}if (typeof col3 === "undefined") col3 = vec3.fromValues(0.6, 0.2, 0.2);
+
 
 function drawScene() {
 
   if (typeof obj !== 'undefined') {
     var yPos = 0.0;
     mat4.fromTranslation(tmpMat, vec3.fromValues(0, yPos, 0));
-    mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+    mat4.multiply(tmpMat, spaceshipCF, tmpMat);   // tmp = ringCF * tmpMat
     obj.draw(posAttr, colAttr, modelUnif, tmpMat);
   }
 }
@@ -104,7 +110,7 @@ function draw3D() {
   drawScene();
 }
 
-/*
+
 function drawTopView() {
   // We must update the projection and view matrices in the shader 
   gl.uniformMatrix4fv(projUnif, false, orthoProjMat);
@@ -112,5 +118,5 @@ function drawTopView() {
   gl.viewport(glCanvas.width/2, 0, glCanvas.width/2, glCanvas.height);
   drawScene();
 }
-*/
+
 
