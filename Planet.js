@@ -38,7 +38,6 @@ class Planet {
 	    }
 	    this.points.push(pointsY);
 	}
-	console.log(counter);
 	this.counter = counter;
 	this.pushVertices();
 	this.preDraw();

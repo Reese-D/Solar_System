@@ -16,8 +16,10 @@ var projUnif, viewUnif, modelUnif;
 
 const IDENTITY = mat4.create();
 var coneSpinAngle;
-var obj;
 var shaderProg;
+var object_hash;
+
+const DEFAULT_LIST_TEXT = "Select an object";
 
 function main() {
     glCanvas = document.getElementById("gl-canvas");
@@ -52,15 +54,31 @@ function main() {
 			vec3.fromValues(0, 0, 0), /* focal point */
 			vec3.fromValues(0, 0, 1)); /* up */
 	    gl.uniformMatrix4fv(modelUnif, false, ringCF);
-
-	    obj = new DilbySpaceship(gl);
+	    object_hash = {};
+	    object_hash["original spaceship"] = new DilbySpaceship(gl);
+	    object_hash["shield"] = new Planet(gl,0,0,0,0.8,75,undefined,112421442,1,4,0.5);
+	    addListToView();
 	    //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
 	    coneSpinAngle = 0;
 	    resizeHandler();
 	    render();
 	});
+
 }
 
+function addListToView(){
+    selector = $(".object_list");
+    selector.empty();
+    selector.append("<option disabled selected>" + DEFAULT_LIST_TEXT + "</option>");
+    for(key in object_hash){
+	selector.append("<option>" + key + "</option>");
+    }
+}
+
+function getCurrentListObject(){
+    selector = $("option:selected");
+    return object_hash[selector.text()];
+}
 
 function resizeHandler() {
     glCanvas.width = window.innerWidth;
@@ -87,14 +105,11 @@ function render() {
 }
 
 function drawScene() {
-
-    if (typeof obj !== 'undefined') {
-	var yPos = 0.0;
-	mat4.fromTranslation(tmpMat, vec3.fromValues(0, yPos, 0));
-	mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
-	obj.draw(posAttr, colAttr, modelUnif, tmpMat);
-	obj2 = new Planet(gl,0,0,0,0.8,75,undefined,112421442,1,4,0.5);
-	obj2.draw(posAttr, colAttr, modelUnif, tmpMat);
+    var yPos = 0.0;
+    mat4.fromTranslation(tmpMat, vec3.fromValues(0, yPos, 0));
+    mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
+    for(key in object_hash){
+	object_hash[key].draw(posAttr, colAttr, modelUnif, tmpMat);
     }
 }
 
