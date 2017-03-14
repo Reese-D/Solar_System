@@ -1,5 +1,6 @@
 /**
- * Created by Hans Dulimarta on 2/16/17.
+ * Created by Reese & Miles De Wind - 03/10/1017
+ * Used code by Hans Dulimarta
  */
 class DilbySpaceship {
 	constructor (gl, coordFrame) {

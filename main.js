@@ -1,5 +1,6 @@
 /**
  * Created by Hans Dulimarta on 1/31/17.
+ * Heavily edited by Reese & Miles De Wind - 03/10/2017
  */
 
 var gl;
