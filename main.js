@@ -114,8 +114,12 @@ function getCurrentListObjectName(){
 
 function deleteCurrentListObject(){
 	delete object_hash[getCurrentListObjectName()];
+	addListToView();
 }
 
+function getCloneNumber(){
+    return $("input[name='num_clones']")[0].valueAsNumber;
+}
 
 function resizeHandler() {
     glCanvas.width = window.innerWidth;
@@ -133,19 +137,56 @@ function resizeHandler() {
     }
 }
 
+function parseSpaceship(objName){
+	var parsedObj = objName.split("spaceship");
+	var currentNum = parseInt(parsedObj[1]);
+	return currentNum;
+}
+
+function parseShield(objName){
+	var parsedObj = objName.split("shield");
+	var currentNum = parseInt(parsedObj[1]);
+	return currentNum;
+}
 
 function cloneObject(){
+	var shipOrShield = 0;
 	var objName = getCurrentListObjectName();
-	console.log(objName);
 	var currentNum = objName.split("spaceship");
 	if(currentNum[1] == undefined){
 		currentNum = objName.split("shield");
+		shipOrShield = 1;
 	}
-	var start = parseInt(currentNum[1]) + 1;
-	console.log(start);
 	var tmpMat2 = mat4.clone(current_object.coordFrame);
         var transpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0, .3));
-	for(let i =start; i < start + 1; i++){
+	var cloneNum = getCloneNumber();
+	var largetsCurrentNumber = 0;
+	var isValidNum;
+	if(cloneNum === parseInt(cloneNum, 10)){
+		//cloneNum is an integer
+	}else{
+		cloneNum = 1;
+	}
+	if(shipOrShield == 0){
+		for(var key in object_hash){
+			isValidNum  = parseSpaceship(key);
+			if(isValidNum === parseInt(isValidNum, 10)){
+				largestCurrentNumber = isValidNum;
+			}
+		}
+	}else{
+		for(var key in object_hash){
+			isValidNum = parseShield(key);
+			if(isValidNum === parseInt(isValidNum, 10)){
+				largestCurrentNumber = isValidNum;
+			}
+		}
+	}	
+	var start = largestCurrentNumber + 1;
+	console.log(start);
+	console.log(start + cloneNum);
+	console.log(tmpMat2);
+	for(let i =start; i < start + cloneNum; i++){
 		var tmpMat2 = mat4.clone(tmpMat2);
 		mat4.multiply (tmpMat2, transpos, tmpMat2);
 		if (current_object instanceof DilbySpaceship){
@@ -157,8 +198,6 @@ function cloneObject(){
 	}
 	addListToView(); 
 }
-
-
 
 
 function keyboardHandler(event) {
@@ -242,17 +281,16 @@ function keyboardHandler(event) {
     case "P":
 	transition = scalings[5]
 	break;
-
-    case "1":
+    case "!":
 	current_view = viewMat;
 	break;
-    case "2":
+    case "@":
 	current_view = topViewMat;
 	break;
-    case "3":
+    case "#":
 	current_view = view3Mat;
 	break;
-    case "4":
+    case "$":
 	current_view = view4Mat;
 	break;
     case "c":
@@ -261,7 +299,6 @@ function keyboardHandler(event) {
     case "d":
 	deleteCurrentListObject();
 	break;
-
      }
     if(typeof transition !== 'undefined'){
 	let origin = [];
