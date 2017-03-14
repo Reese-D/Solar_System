@@ -112,6 +112,10 @@ function getCurrentListObjectName(){
     return $("option:selected").text();
 }
 
+function getCloneNumber(){
+    return $("input[name='num_clones']")[0].valueAsNumber;
+}
+
 function resizeHandler() {
     glCanvas.width = window.innerWidth;
     glCanvas.height = 0.9 * window.innerHeight;
