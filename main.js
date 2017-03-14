@@ -161,12 +161,20 @@ function keyboardHandler(event) {
     //var unif;
     // unif = gl.getUniformLocation(getCurrentListObject(), "object");
     // gl.uniformMatrix4fv(unif, false, ringCF);
-    const transXpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 1, 0, 0));
-    const transXneg = mat4.fromTranslation(mat4.create(), vec3.fromValues(-1, 0, 0));
-    const transYpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 1, 0));
-    const transYneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0,-1, 0));
-    const transZpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0, 1));
-    const transZneg = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0,-1));
+    var translations = [];
+    var rotations = [];
+    var scalings = [];
+    for(let i = 0; i < 3; i++){
+	var current = [0,0,0];
+	for(let k = -1; k < 2; k+=2){
+	    current[i] = k
+	    translations.push(mat4.fromTranslation(mat4.create(), vec3.fromValues(current[0], current[1], current[2])));
+	    rotations.push(mat4.fromRotation(mat4.create(),Math.PI/9, vec3.fromValues(current[0], current[1], current[2])));
+	    current[i] = k*0.1 + 1;
+	    current[i]--;
+	    scalings.push(mat4.fromScaling(mat4.create(), vec3.fromValues(1 + current[0], 1 + current[1], 1 + current[2])));
+	}
+    }
     current_object = getCurrentListObject();
     if(typeof current_object === 'undefined'){
 	return;
@@ -175,23 +183,62 @@ function keyboardHandler(event) {
     switch (event.key) {
 	
     case "x":
-	transition = transXpos;
+	transition = translations[0]
 	break;
     case "X":
-	transition = transXneg;
+	transition = translations[1]
 	break;
     case "y":
-	transition = transYneg;
+	transition = translations[2]
 	break;
     case "Y":
-	transition = transYpos;
+	transition = translations[3]
 	break;
     case "z":
-	transition = transZneg;
+	transition = translations[4]
 	break;
     case "Z":
-	transition = transZpos;
+	transition = translations[5]
 	break;
+
+    case "q":
+	transition = rotations[0]
+	break;
+    case "Q":
+	transition = rotations[1]
+	break;
+    case "w":
+	transition = rotations[2]
+	break;
+    case "W":
+	transition = rotations[3]
+	break;
+    case "e":
+	transition = rotations[4]
+	break;
+    case "E":
+	transition = rotations[5]
+	break;
+
+    case "i":
+	transition = scalings[0]
+	break;
+    case "I":
+	transition = scalings[1]
+	break;
+    case "o":
+	transition = scalings[2]
+	break;
+    case "O":
+	transition = scalings[3]
+	break;
+    case "p":
+	transition = scalings[4]
+	break;
+    case "P":
+	transition = scalings[5]
+	break;
+
     case "1":
 	current_view = viewMat;
 	break;
@@ -207,8 +254,17 @@ function keyboardHandler(event) {
     case "c":
 	cloneObject();
 	break;
+
+     }
+    if(typeof transition !== 'undefined'){
+	let origin = [];
+	origin.push(current_object.coordFrame[12], current_object.coordFrame[13], current_object.coordFrame[14]);
+	translate_to_origin = mat4.fromTranslation(mat4.create(), vec3.fromValues(origin[0]*-1, origin[1]*-1, origin[2]*-1))
+	mat4.multiply(current_object.coordFrame, translate_to_origin, current_object.coordFrame);
+	mat4.multiply(current_object.coordFrame, transition, current_object.coordFrame);  // ringCF = Trans * ringCF
+	translate_to_origin = mat4.fromTranslation(mat4.create(), vec3.fromValues(origin[0], origin[1], origin[2]))
+	mat4.multiply(current_object.coordFrame, translate_to_origin, current_object.coordFrame);
     }
-    mat4.multiply(current_object.coordFrame, transition, current_object.coordFrame);  // ringCF = Trans * ringCF
     textOut.innerHTML = "Ring origin (" + ringCF[12].toFixed(1) + ", "
 	+ ringCF[13].toFixed(1) + ", "
 	+ ringCF[14].toFixed(1) + ")";
