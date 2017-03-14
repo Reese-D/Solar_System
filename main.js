@@ -133,17 +133,23 @@ function cloneObject(){
 	var objName = getCurrentListObjectName();
 	console.log(objName);
 	var currentNum = objName.split("spaceship");
-	console.log(currentNum[1]);
-	var offset = -2;
-	for(let i =1; i < 3; i++){
-		var tmpMat2 = mat4.clone(current_object.coordFrame);
-		mat4.fromTranslation(tmpMat2, vec3.fromValues(0, offset, 0));
+	if(currentNum[1] == undefined){
+		currentNum = objName.split("shield");
+	}
+	var start = parseInt(currentNum[1]) + 1;
+	console.log(start);
+	var tmpMat2 = mat4.clone(current_object.coordFrame);
+        var transpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0, .3));
+	var end = 4;
+	for(let i =start; i < end; i++){
+		var tmpMat2 = mat4.clone(tmpMat2);
+		mat4.multiply (tmpMat2, transpos, tmpMat2);
 		if (current_object instanceof DilbySpaceship){
+			console.log(i);
 			object_hash["spaceship" +i] = new DilbySpaceship(gl, tmpMat2);
 		}else{
-			object_hash["shield" + i] = new Planet(gl, 0, offset, 0, 1.0, 75, undefined, 112421442, 1, 4, 0.5, tmpMat2);
+			object_hash["shield" + i] = new Planet(gl, 0, 0, 0, 1.0, 75, undefined, 112421442, 1, 4, 0.5, tmpMat2);
 		}
-		offset++;
 	}
 	addListToView(); 
 }
