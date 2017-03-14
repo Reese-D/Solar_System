@@ -77,11 +77,9 @@ function main() {
 	    mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
 
 	    //create a hash of all initial objects
-	    tmpMat2 = mat4.create()
 	    object_hash = {};
-	    object_hash["original spaceship"] = new DilbySpaceship(gl, tmpMat);
-	    object_hash["shield"] = new Planet(gl, 0, 0, 0, 1.0, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-
+	    object_hash["spaceship0"] = new DilbySpaceship(gl, tmpMat);
+	    object_hash["shield0"] = new Planet(gl, 0, 0, 0, 1.0, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
 	    // modelUnif = gl.getUniformLocation(prog, "shield");
 	    addListToView();
 	    //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
@@ -110,6 +108,10 @@ function getCurrentListObject(){
     return object_hash[selector.text()];
 }
 
+function getCurrentListObjectName(){
+    return $("option:selected").text();
+}
+
 function resizeHandler() {
     glCanvas.width = window.innerWidth;
     glCanvas.height = 0.9 * window.innerHeight;
@@ -124,8 +126,29 @@ function resizeHandler() {
     } else {
 	alert ("Window is too narrow!");
     }
-
 }
+
+
+function cloneObject(){
+	var objName = getCurrentListObjectName();
+	console.log(objName);
+	var currentNum = objName.split("spaceship");
+	console.log(currentNum[1]);
+	var offset = -2;
+	for(let i =1; i < 3; i++){
+		var tmpMat2 = mat4.clone(current_object.coordFrame);
+		mat4.fromTranslation(tmpMat2, vec3.fromValues(0, offset, 0));
+		if (current_object instanceof DilbySpaceship){
+			object_hash["spaceship" +i] = new DilbySpaceship(gl, tmpMat2);
+		}else{
+			object_hash["shield" + i] = new Planet(gl, 0, offset, 0, 1.0, 75, undefined, 112421442, 1, 4, 0.5, tmpMat2);
+		}
+		offset++;
+	}
+	addListToView(); 
+}
+
+
 
 
 function keyboardHandler(event) {
@@ -146,22 +169,37 @@ function keyboardHandler(event) {
     switch (event.key) {
 	
     case "x":
-	transition = transXpos
+	transition = transXpos;
 	break;
     case "X":
-	transition = transXneg
+	transition = transXneg;
 	break;
     case "y":
-	transition = transYneg
+	transition = transYneg;
 	break;
     case "Y":
-	transition = transYpos
+	transition = transYpos;
 	break;
     case "z":
-	transition = transZneg
+	transition = transZneg;
 	break;
     case "Z":
-	transition = transZpos
+	transition = transZpos;
+	break;
+    case "1":
+	current_view = viewMat;
+	break;
+    case "2":
+	current_view = topViewMat;
+	break;
+    case "3":
+	current_view = view3Mat;
+	break;
+    case "4":
+	current_view = view4Mat;
+	break;
+    case "c":
+	cloneObject();
 	break;
     }
     mat4.multiply(current_object.coordFrame, transition, current_object.coordFrame);  // ringCF = Trans * ringCF
