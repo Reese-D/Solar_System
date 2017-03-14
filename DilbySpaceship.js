@@ -2,7 +2,7 @@
  * Created by Hans Dulimarta on 2/16/17.
  */
 class DilbySpaceship {
-	constructor (gl) {
+	constructor (gl, coordFrame) {
 		this.bridge = new Cube(gl, 0.3, 4);
 		this.connector = new Cylinder(gl, 0.15, 0.15, 0.7, 4);
 		this.body = new Cylinder(gl, 0.212, .212, 0.6, 4);
@@ -18,6 +18,7 @@ class DilbySpaceship {
 		this.rocket2 = new Cylinder(gl, 0.05, 0.05, .5, 12);
 		this.rocket3 = new Cylinder(gl, 0.05, 0.05, .5, 12);
 		this.rocket4 = new Cylinder(gl, 0.05, 0.05, .5, 12);
+	        this.coordFrame = coordFrame;
 
 		//move bridge location    
 		let moveAgainstX = vec3.fromValues (-0.3, 0, 0);
@@ -417,50 +418,50 @@ class DilbySpaceship {
 		this.tmp = mat4.create();
 	}
 
-	draw (vertexAttr, colorAttr, modelUniform, coordFrame) {
-		mat4.mul (this.tmp, coordFrame, this.bridgeTransform);
+	draw (vertexAttr, colorAttr, modelUniform) {
+		mat4.mul (this.tmp, this.coordFrame, this.bridgeTransform);
 		this.bridge.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
-		mat4.mul (this.tmp, coordFrame, this.connectorTransform);
+		mat4.mul (this.tmp, this.coordFrame, this.connectorTransform);
 		this.connector.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
-		mat4.mul (this.tmp, coordFrame, this.bodyTransform);
+		mat4.mul (this.tmp, this.coordFrame, this.bodyTransform);
 		this.body.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.wing1Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.wing1Transform);
 		this.wing1.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.wing2Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.wing2Transform);
 		this.wing2.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.wing3Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.wing3Transform);
 		this.wing3.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.wing4Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.wing4Transform);
 		this.wing4.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.mount1Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.mount1Transform);
 		this.mount1.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.mount2Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.mount2Transform);
 		this.mount2.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.thruster1Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.thruster1Transform);
 		this.thruster1.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
-		mat4.mul (this.tmp, coordFrame, this.thruster2Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.thruster2Transform);
 		this.thruster2.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.rocket1Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.rocket1Transform);
 		this.rocket1.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.rocket2Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.rocket2Transform);
 		this.rocket2.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.rocket3Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.rocket3Transform);
 		this.rocket3.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 		
-		mat4.mul (this.tmp, coordFrame, this.rocket4Transform);
+		mat4.mul (this.tmp, this.coordFrame, this.rocket4Transform);
 		this.rocket4.draw(vertexAttr, colorAttr, modelUniform, this.tmp);
 
 	}

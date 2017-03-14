@@ -10,7 +10,7 @@ class Planet {
      * @param {int} subDiv the number of subdivisions for the planet, number of points will be subDiv^2
      * @param {color} color the base color of a planet
      */
-    constructor(gl,x,y,z,radius,subDiv,color,seed,startOctave,endOctave,persistence) {
+    constructor(gl,x,y,z,radius,subDiv,color,seed,startOctave,endOctave,persistence,coordFrame) {
 	if(typeof color === "undefined") color = vec3.fromValues(Math.random(), Math.random(), Math.random());
 	this.gl = gl;
 	this.x = x;
@@ -25,6 +25,7 @@ class Planet {
 	this.startOctave = startOctave;
 	this.endOctave = endOctave;
 	this.persistence = persistence;
+	this.coordFrame = coordFrame;
 	let maxAngle = Math.PI * 2;
 	//let divisions = Math.round(subDiv)/10.0;
 	let counter = 0;
@@ -239,9 +240,9 @@ class Planet {
      * @param {mat4} coordFrame a JS mat4 variable that holds the actual coordinate frame of the object
      */
     
-    draw(vertexAttr, colorAttr, modelUniform, coordFrame) {
+    draw(vertexAttr, colorAttr, modelUniform) {
 	/* copy the coordinate frame matrix to the uniform memory in shader */
-	this.gl.uniformMatrix4fv(modelUniform, false, coordFrame);
+	this.gl.uniformMatrix4fv(modelUniform, false, this.coordFrame);
 
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vbuff);
 
