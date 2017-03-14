@@ -193,6 +193,7 @@ function keyboardHandler(event) {
 	break;
     case "Z":
 	transition = translations[5]
+	break;
 
     case "q":
 	transition = rotations[0]
@@ -250,7 +251,13 @@ function keyboardHandler(event) {
 
      }
     if(typeof transition !== 'undefined'){
+	let origin = [];
+	origin.push(current_object.coordFrame[12], current_object.coordFrame[13], current_object.coordFrame[14]);
+	translate_to_origin = mat4.fromTranslation(mat4.create(), vec3.fromValues(origin[0]*-1, origin[1]*-1, origin[2]*-1))
+	mat4.multiply(current_object.coordFrame, translate_to_origin, current_object.coordFrame);
 	mat4.multiply(current_object.coordFrame, transition, current_object.coordFrame);  // ringCF = Trans * ringCF
+	translate_to_origin = mat4.fromTranslation(mat4.create(), vec3.fromValues(origin[0], origin[1], origin[2]))
+	mat4.multiply(current_object.coordFrame, translate_to_origin, current_object.coordFrame);
     }
     textOut.innerHTML = "Ring origin (" + ringCF[12].toFixed(1) + ", "
 	+ ringCF[13].toFixed(1) + ", "
