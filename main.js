@@ -61,11 +61,11 @@ function main() {
 			vec3.fromValues(0, 0, 0), 
 			vec3.fromValues(0, 1, 0));	
 	    mat4.lookAt(view3Mat,
-			vec3.fromValues(2, -0.5, .5), 
+			vec3.fromValues(2, -0.5, 1.0), 
 			vec3.fromValues(0, 0, 0), 
 			vec3.fromValues(0, 0, 1)); 
 	    mat4.lookAt(view4Mat,
-			vec3.fromValues(-2, .5, 0.5), 
+			vec3.fromValues(-2, .5, 1.0), 
 			vec3.fromValues(0, 0, 0), 
 			vec3.fromValues(0, 0, 1));
 	    current_view = viewMat; 
@@ -112,6 +112,11 @@ function getCurrentListObjectName(){
     return $("option:selected").text();
 }
 
+function deleteCurrentListObject(){
+	delete object_hash[getCurrentListObjectName()];
+}
+
+
 function resizeHandler() {
     glCanvas.width = window.innerWidth;
     glCanvas.height = 0.9 * window.innerHeight;
@@ -140,8 +145,7 @@ function cloneObject(){
 	console.log(start);
 	var tmpMat2 = mat4.clone(current_object.coordFrame);
         var transpos = mat4.fromTranslation(mat4.create(), vec3.fromValues( 0, 0, .3));
-	var end = 4;
-	for(let i =start; i < end; i++){
+	for(let i =start; i < start + 1; i++){
 		var tmpMat2 = mat4.clone(tmpMat2);
 		mat4.multiply (tmpMat2, transpos, tmpMat2);
 		if (current_object instanceof DilbySpaceship){
@@ -254,6 +258,9 @@ function keyboardHandler(event) {
     case "c":
 	cloneObject();
 	break;
+    case "d":
+	deleteCurrentListObject();
+	break;
 
      }
     if(typeof transition !== 'undefined'){
@@ -264,10 +271,10 @@ function keyboardHandler(event) {
 	mat4.multiply(current_object.coordFrame, transition, current_object.coordFrame);  // ringCF = Trans * ringCF
 	translate_to_origin = mat4.fromTranslation(mat4.create(), vec3.fromValues(origin[0], origin[1], origin[2]))
 	mat4.multiply(current_object.coordFrame, translate_to_origin, current_object.coordFrame);
+    	textOut.innerHTML = "Ring origin (" + ringCF[12].toFixed(1) + ", "
+	    + ringCF[13].toFixed(1) + ", "
+	    + ringCF[14].toFixed(1) + ")";
     }
-    textOut.innerHTML = "Ring origin (" + ringCF[12].toFixed(1) + ", "
-	+ ringCF[13].toFixed(1) + ", "
-	+ ringCF[14].toFixed(1) + ")";
 }
 
 function render() {
