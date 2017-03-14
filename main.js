@@ -4,10 +4,10 @@
 
 var gl;
 var glCanvas, textOut;
-var orthoProjMat, persProjMat, viewMat, topViewMat, ringCF;
+var orthoProjMat, persProjMat, viewMat, topViewMat, view3Mat, view4mat, ringCF;
 var axisBuff, tmpMat;
 var globalAxes;
-
+var current_view;
 /* Vertex shader attribute variables */
 var posAttr, colAttr;
 
@@ -44,16 +44,31 @@ function main() {
 	    modelUnif = gl.getUniformLocation(prog, "modelCF");
 	    gl.enableVertexAttribArray(posAttr);
 	    gl.enableVertexAttribArray(colAttr);
-	    //orthoProjMat = mat4.create();
+	    orthoProjMat = mat4.create();
 	    persProjMat = mat4.create();
 	    viewMat = mat4.create();
-	    
+	    topViewMat = mat4.create();
+	    view3Mat = mat4.create();
+	    view4Mat = mat4.create();	
 	    ringCF = mat4.create();
 	    tmpMat = mat4.create();
 	    mat4.lookAt(viewMat,
 			vec3.fromValues(2, 2, 2), /* eye */
 			vec3.fromValues(0, 0, 0), /* focal point */
 			vec3.fromValues(0, 0, 1)); /* up */
+	    mat4.lookAt(topViewMat,
+			vec3.fromValues(0, 0, 2), 
+			vec3.fromValues(0, 0, 0), 
+			vec3.fromValues(0, 1, 0));	
+	    mat4.lookAt(view3Mat,
+			vec3.fromValues(2, -0.5, .5), 
+			vec3.fromValues(0, 0, 0), 
+			vec3.fromValues(0, 0, 1)); 
+	    mat4.lookAt(view4Mat,
+			vec3.fromValues(-2, .5, 0.5), 
+			vec3.fromValues(0, 0, 0), 
+			vec3.fromValues(0, 0, 1));
+	    current_view = viewMat; 
 	    gl.uniformMatrix4fv(modelUnif, false, ringCF);
 
 	    //translate everything
@@ -170,18 +185,9 @@ function drawScene() {
 function draw3D() {
     /* We must update the projection and view matrices in the shader */
     gl.uniformMatrix4fv(projUnif, false, persProjMat);
-    gl.uniformMatrix4fv(viewUnif, false, viewMat)
+    gl.uniformMatrix4fv(viewUnif, false, current_view)
     gl.viewport(0, 0, glCanvas.width, glCanvas.height);
     drawScene();
 }
 
-/*
-  function drawTopView() {
-  // We must update the projection and view matrices in the shader 
-  gl.uniformMatrix4fv(projUnif, false, orthoProjMat);
-  gl.uniformMatrix4fv(viewUnif, false, topViewMat);
-  gl.viewport(glCanvas.width/2, 0, glCanvas.width/2, glCanvas.height);
-  drawScene();
-  }
-*/
 
