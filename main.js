@@ -6,19 +6,22 @@
 var gl;
 var glCanvas, textOut;
 var orthoProjMat, persProjMat, viewMat, topViewMat, view3Mat, view4mat, ringCF;
-var axisBuff, tmpMat;
+var lightCF, lightPos, pointLight, eyePos;
+var axisBuff, tmpMat, lineBuff;
 var globalAxes;
 var current_view;
 /* Vertex shader attribute variables */
-var posAttr, colAttr;
+var posAttr, colAttr, normalAttr;
 
 /* Shader uniform variables */
-var projUnif, viewUnif, modelUnif;
+var projUnif, viewUnif, modelUnif, lightPosUnif, normalUnif, useLightingUnif;
+var objTintUnif, ambCoeffUnif, diffCoeffUnif, specCoeffUnif, shininessUnif, isEnabledUnif;
 
 const IDENTITY = mat4.create();
 var coneSpinAngle;
 var shaderProg;
 var object_hash;
+var obj;
 
 const DEFAULT_LIST_TEXT = "Select an object";
 
@@ -28,6 +31,16 @@ function main() {
     gl = WebGLUtils.setupWebGL(glCanvas, null);
     axisBuff = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, axisBuff);
+    let normalCheckBox = document.getElementById("shownormal");
+    normalCheckBox.addEventListener('change', ev => {
+      showNormal = ev.target.checked;
+      redrawNeeded = true;
+    }, false);
+    let lightCheckBox = document.getElementById("showlightvector");
+    lightCheckBox.addEventListener('change', ev => {
+      showLightVectors = ev.target.checked;
+      redrawNeeded = true;
+    }, false);
     window.addEventListener("resize", resizeHandler, false);
     window.addEventListener("keypress", keyboardHandler, false);
     ShaderUtils.loadFromFile(gl, "vshader.glsl", "fshader.glsl")
@@ -38,11 +51,22 @@ function main() {
 	    gl.enable(gl.DEPTH_TEST);    /* enable hidden surface removal */
 	    //gl.enable(gl.CULL_FACE);     /* cull back facing polygons */
 	    //gl.cullFace(gl.BACK);
+	    lineBuff = gl.createBuffer();
 	    posAttr = gl.getAttribLocation(prog, "vertexPos");
 	    colAttr = gl.getAttribLocation(prog, "vertexCol");
+	    normalAttr = gl.getAttribLocation(prog, "jiberish");
+	    lightPosUnif = gl.getUniformLocation(prog, "lightPosWorld");
 	    projUnif = gl.getUniformLocation(prog, "projection");
 	    viewUnif = gl.getUniformLocation(prog, "view");
 	    modelUnif = gl.getUniformLocation(prog, "modelCF");
+	    normalUnif = gl.getUniformLocation(prog, "normalMat");
+	    useLightingUnif = gl.getUniformLocation(prog, "useLighting");
+	    objTintUnif = gl.getUniformLocation(prog, "objectTint");
+	    ambCoeffUnif = gl.getUniformLocation(prog, "ambientCoeff");
+	    diffCoeffUnif = gl.getUniformLocation(prog, "diffuseCoeff");
+	    specCoeffUnif = gl.getUniformLocation(prog, "specularCoeff");
+	    shininessUnif = gl.getUniformLocation(prog, "shininess");
+	    isEnabledUnif = gl.getUniformLocation(prog, "isEnabled");
 	    gl.enableVertexAttribArray(posAttr);
 	    gl.enableVertexAttribArray(colAttr);
 	    orthoProjMat = mat4.create();
@@ -52,9 +76,10 @@ function main() {
 	    view3Mat = mat4.create();
 	    view4Mat = mat4.create();	
 	    ringCF = mat4.create();
+	    lightCF = mat4.create();
 	    tmpMat = mat4.create();
 	    mat4.lookAt(viewMat,
-			vec3.fromValues(2, 2, 2), /* eye */
+			vec3.fromValues(5, 5, 5), /* eye */
 			vec3.fromValues(0, 0, 0), /* focal point */
 			vec3.fromValues(0, 0, 1)); /* up */
 	    mat4.lookAt(topViewMat,
@@ -71,6 +96,23 @@ function main() {
 			vec3.fromValues(0, 0, 1));
 	    current_view = viewMat; 
 	    gl.uniformMatrix4fv(modelUnif, false, ringCF);
+	     
+	    lightPos = vec3.fromValues(0, 2, 2);
+	    mat4.fromTranslation(lightCF, lightPos);		
+	    gl.uniform3fv(lightPosUnif, lightPos);
+	    let vertices = [0, 0, 0, 1, 1, 1,
+		lightPos[0], 0, 0, 1, 1, 1,
+		lightPos[0], lightPos[1], 0, 1, 1, 1,
+		lightPos[0], lightPos[1], lightPos[2], 1, 1, 1];
+	    gl.bindBuffer(gl.ARRAY_BUFFER, lineBuff);
+	    gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(vertices), gl.STATIC_DRAW);
+	    
+	    objTint = vec3.fromValues(Math.random(), Math.random(), Math.random());
+	    gl.uniform3fv(objTintUnif, objTint);
+	    gl.uniform1f(ambCoeffUnif, 1);
+	    gl.uniform1f(diffCoeffUnif, 1);
+	    gl.uniform1f(specCoeffUnif, 1);
+	    gl.uniform1f(shininessUnif, 1);
 
 	    //translate everything
 	    var yPos = 0.0;
@@ -81,6 +123,8 @@ function main() {
 	    object_hash = {};
 	    object_hash["spaceship0"] = new DilbySpaceship(gl, tmpMat);
 	    object_hash["shield0"] = new Planet(gl, 0, 0, 0, 1.0, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    let yellow = vec3.fromValues(0xe7/255, 0xf2/255, 0x4d/255);
+	    pointLight = new UniSphere(gl, 0.03, 3, yellow, yellow);
 	    // modelUnif = gl.getUniformLocation(prog, "shield");
 	    addListToView();
 	    //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
@@ -187,6 +231,7 @@ function cloneObject(){
 	console.log(start);
 	console.log(start + cloneNum);
 	console.log(tmpMat2);
+	obj = new Torus(gl, 1, .3, 36, 24);
 	for(let i =start; i < start + cloneNum; i++){
 		var tmpMat2 = mat4.clone(tmpMat2);
 		mat4.multiply (tmpMat2, transpos, tmpMat2);
@@ -322,16 +367,35 @@ function render() {
 }
 
 function drawScene() {
+    gl.disableVertexAttribArray(normalAttr);
+    gl.enableVertexAttribArray(colAttr);
+
+
+    // Use LINE_STRIP to mark light position
+    gl.uniformMatrix4fv(modelUnif, false, ringCF);
+    gl.bindBuffer(gl.ARRAY_BUFFER, lineBuff);
+    gl.vertexAttribPointer(posAttr, 3, gl.FLOAT, false, 24, 0);
+    gl.vertexAttribPointer(colAttr, 3, gl.FLOAT, false, 24, 12);
+    gl.drawArrays(gl.LINE_STRIP, 0, 4);
+
+    // Draw the light source using its own coordinate frame
+    pointLight.draw(posAttr, colAttr, modelUnif, lightCF);
+
+    gl.disableVertexAttribArray(colAttr);
+    gl.enableVertexAttribArray(normalAttr);
     for(key in object_hash){
-	object_hash[key].draw(posAttr, colAttr, modelUnif);
+	object_hash[key].draw(posAttr, normalAttr, modelUnif);
     }
 }
 
 function draw3D() {
     /* We must update the projection and view matrices in the shader */
     gl.uniformMatrix4fv(projUnif, false, persProjMat);
-    gl.uniformMatrix4fv(viewUnif, false, current_view)
+    gl.uniformMatrix4fv(viewUnif, false, current_view);
     gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+    obj = new Torus (gl, 1, .3, 26, 24);
+    obj.drawVectorsTo(gl, lightPos, posAttr, colAttr, modelUnif, ringCF);
+    obj.draw(posAttr, normalAttr, modelUnif, ringCF);
     drawScene();
 }
 
