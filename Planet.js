@@ -26,13 +26,14 @@ class Planet {
 	this.endOctave = endOctave;
 	this.persistence = persistence;
 	this.coordFrame = coordFrame;
+	this.p5 = new p5();
 	let maxAngle = Math.PI * 2;
 	//let divisions = Math.round(subDiv)/10.0;
 	let counter = 0;
 	let increments = (maxAngle / subDiv);
-	for(let rotationX = increments; rotationX <= maxAngle; rotationX += increments){
+	for(let rotationX = 0; rotationX <= maxAngle; rotationX += increments){
 	    let pointsY = []
-	    for(let rotationY = increments; rotationY < maxAngle; rotationY += increments){
+	    for(let rotationY = 0; rotationY <= maxAngle; rotationY += increments){
 		let currPoint = this.getRandomPoint(rotationX, rotationY, color.slice(), maxAngle);
 		pointsY.push(currPoint);
 		counter++;
@@ -41,6 +42,7 @@ class Planet {
 	}
 	this.counter = counter;
 	this.pushVertices();
+	this.pushIndices();
 	this.preDraw();
     }
 
@@ -51,12 +53,14 @@ class Planet {
     }
 
     pushVertices(){
+	this.p5.noiseSeed(this.seed)
 	for(let i = 0; i < this.points.length; i++){
 	    for(let t = 0; t < this.points[i].length; t++){
 		let currPoint = this.points[i][t];
 		this.vertices.push(currPoint.x, currPoint.y, currPoint.z);
 		//let col = this.getNoise(i/this.points.length,t/this.points[i].length)
-		let col = (this.getNoise(i,t) + 2) / 4;
+		//let col = (this.getNoise(i,t) + 2) / 4;
+		let col = this.p5.noise(i,t);
 		//let col = 0.2
 		this.vertices.push(Math.max(0.4, col),Math.max(0.4, col),Math.max(0.6, col))
 		//this.vertices.push(currPoint.color[0], currPoint.color[1], currPoint.color[2]);
@@ -64,9 +68,26 @@ class Planet {
 	}
     }
 
+    pushIndices(){
+	this.indices = [];
+	for(let i = 0; i < this.points.length/2; i++){
+	let Idx = []
+	    for(let j = 0; j < this.points[i].length; j++){
+		Idx.push((i * this.points[0].length + j) % this.counter);
+		Idx.push(((i+1) * this.points[0].length + j) % this.counter);
+	    }
+	    let idxBuffer = gl.createBuffer();
+     	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuffer);
+     	    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, Uint16Array.from(Idx), gl.STATIC_DRAW);
+     	    this.indices.push({"primitive": gl.TRIANGLE_STRIP, "buffer": idxBuffer, "numPoints": Idx.length});
+	}
+
+
+    }
+
     getRandomPoint(rotationX, rotationY, color, numPoints){
-	rotationY = rotationY + (Math.random() * 2 - 1) / (numPoints * 2);
-	rotationX = rotationX + (Math.random() * 2 - 1) / (numPoints * 2);
+	rotationY = rotationY + (Math.random() * 2 - 1) / (numPoints * 8);
+	rotationX = rotationX + (Math.random() * 2 - 1) / (numPoints * 8);
 	let x = this.x + this.radius * Math.cos(rotationX) * Math.sin(rotationY);
 	let y = this.y + this.radius * Math.sin(rotationX) * Math.sin(rotationY);
 	let z = this.z + this.radius * Math.cos(rotationY);
@@ -252,10 +273,10 @@ class Planet {
 	this.gl.vertexAttribPointer(colorAttr, 3, this.gl.FLOAT, false, 24, 12); /* (r,g,b) begins at offset 12 */
 
 	this.gl.drawArrays(this.gl.LINE_STRIP, 0, this.counter) //Math.pow(this.subDiv, 2));
-	// for (let k = 0; k < this.indices.length; k++) {
-	//     let obj = this.indices[k];
-	//     this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
-	//     this.gl.drawElements(obj.primitive, obj.numPoints, this.gl.UNSIGNED_BYTE, 0);
-	// }
+	for (let k = 0; k < this.indices.length; k++) {
+	    let obj = this.indices[k];
+	    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, obj.buffer);
+	    this.gl.drawElements(obj.primitive, obj.numPoints, this.gl.UNSIGNED_SHORT, 0);
+	}
     }
 }
