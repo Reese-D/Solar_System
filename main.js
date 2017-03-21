@@ -80,7 +80,7 @@ function main() {
 	    //create a hash of all initial objects
 	    object_hash = {};
 	    object_hash["spaceship0"] = new DilbySpaceship(gl, tmpMat);
-	    object_hash["shield0"] = new Planet(gl, 0, 0, 0, 1.0, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["shield0"] = new Planet(gl, 0, 0, 0, 1.0, 74, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
 	    // modelUnif = gl.getUniformLocation(prog, "shield");
 	    addListToView();
 	    //mat4.rotateX(ringCF, ringCF, -Math.PI/2);

@@ -73,8 +73,15 @@ class Planet {
 	for(let i = 0; i < this.points.length/2; i++){
 	let Idx = []
 	    for(let j = 0; j < this.points[i].length; j++){
-		Idx.push((i * this.points[0].length + j) % this.counter);
-		Idx.push(((i+1) * this.points[0].length + j) % this.counter);
+		let a = (i * this.points[0].length + j) % this.counter;
+		let b = ((i+1) * this.points[0].length + j) % this.counter;
+		if(j < this.points[i].length / 2){
+		    Idx.push(b)
+		    Idx.push(a);
+		}else{
+		    Idx.push(a)
+		    Idx.push(b);
+		}		    
 	    }
 	    let idxBuffer = gl.createBuffer();
      	    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, idxBuffer);
@@ -86,8 +93,8 @@ class Planet {
     }
 
     getRandomPoint(rotationX, rotationY, color, numPoints){
-	rotationY = rotationY + (Math.random() * 2 - 1) / (numPoints * 8);
-	rotationX = rotationX + (Math.random() * 2 - 1) / (numPoints * 8);
+	//rotationY = rotationY + (Math.random() * 2 - 1) / (numPoints * 8);
+	//rotationX = rotationX + (Math.random() * 2 - 1) / (numPoints * 8);
 	let x = this.x + this.radius * Math.cos(rotationX) * Math.sin(rotationY);
 	let y = this.y + this.radius * Math.sin(rotationX) * Math.sin(rotationY);
 	let z = this.z + this.radius * Math.cos(rotationY);
