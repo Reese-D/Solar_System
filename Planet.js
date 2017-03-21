@@ -27,6 +27,7 @@ class Planet {
 	this.persistence = persistence;
 	this.coordFrame = coordFrame;
 	this.p5 = new p5();
+	this.p5.noiseSeed(this.seed)
 	let maxAngle = Math.PI * 2;
 	//let divisions = Math.round(subDiv)/10.0;
 	let counter = 0;
@@ -53,7 +54,6 @@ class Planet {
     }
 
     pushVertices(){
-	this.p5.noiseSeed(this.seed)
 	this.p5.noiseDetail(8,0.5)
 	for(let i = 0; i < this.points.length; i++){
 	    for(let t = 0; t < this.points[i].length; t++){
@@ -97,9 +97,19 @@ class Planet {
     getRandomPoint(rotationX, rotationY, color, numPoints){
 	//rotationY = rotationY + (Math.random() * 2 - 1) / (numPoints * 8);
 	//rotationX = rotationX + (Math.random() * 2 - 1) / (numPoints * 8);
+
 	let x = this.x + this.radius * Math.cos(rotationX) * Math.sin(rotationY);
 	let y = this.y + this.radius * Math.sin(rotationX) * Math.sin(rotationY);
 	let z = this.z + this.radius * Math.cos(rotationY);
+	this.p5.noiseDetail(4, 0.3)
+	let mult = 5
+	let noise_influence = 0.2
+	let uninfluenced = 1 - noise_influence;
+	let r_noise = this.p5.noise(x*mult,y*mult,z*mult) * this.radius * noise_influence;
+	x = this.x + (this.radius*uninfluenced + r_noise) * Math.cos(rotationX) * Math.sin(rotationY);
+	y = this.y + (this.radius*uninfluenced + r_noise) * Math.sin(rotationX) * Math.sin(rotationY);
+	z = this.z + (this.radius*uninfluenced + r_noise) * Math.cos(rotationY);	
+
 	return new Point(x,y,z,color);
     }
     
