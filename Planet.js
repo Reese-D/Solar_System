@@ -101,8 +101,8 @@ class Planet {
 	let x = this.x + this.radius * Math.cos(rotationX) * Math.sin(rotationY);
 	let y = this.y + this.radius * Math.sin(rotationX) * Math.sin(rotationY);
 	let z = this.z + this.radius * Math.cos(rotationY);
-	this.p5.noiseDetail(4, 0.3)
-	let mult = 5;
+	this.p5.noiseDetail(16, 0.5)
+	let mult = 2;
 	let tmp_noise = this.p5.noise(x*mult,y*mult,z*mult);
 	let noise_influence = tmp_noise * tmp_noise;
 	let uninfluenced = 1 - noise_influence;
