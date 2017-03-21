@@ -54,15 +54,17 @@ class Planet {
 
     pushVertices(){
 	this.p5.noiseSeed(this.seed)
+	this.p5.noiseDetail(8,0.5)
 	for(let i = 0; i < this.points.length; i++){
 	    for(let t = 0; t < this.points[i].length; t++){
 		let currPoint = this.points[i][t];
 		this.vertices.push(currPoint.x, currPoint.y, currPoint.z);
 		//let col = this.getNoise(i/this.points.length,t/this.points[i].length)
 		//let col = (this.getNoise(i,t) + 2) / 4;
-		let col = this.p5.noise(i,t);
+		let mult = 2
+		let col = this.p5.noise(currPoint.x*mult,currPoint.y*mult,currPoint.z*mult);
 		//let col = 0.2
-		this.vertices.push(Math.max(0.4, col),Math.max(0.4, col),Math.max(0.6, col))
+		this.vertices.push(col,col, col)
 		//this.vertices.push(currPoint.color[0], currPoint.color[1], currPoint.color[2]);
 	    }
 	}
