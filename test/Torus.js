@@ -29,7 +29,8 @@ class Torus extends GeometricObject {
         let y = radius * Math.sin(majAngle);
 
         /* the first three floats are 3D (x,y,z) position */
-        this.vertices.push(x, y, h);
+          this.vertices.push(x, y, h);
+	  this.vertices.push(Math.random(),Math.random(),Math.random());
         /* calculate the tangent vectors */
         vec3.set (n1, -Math.sin(majAngle), Math.cos(majAngle), 0);
         vec3.set (n2, -Math.sin(minAngle) * Math.cos(majAngle),

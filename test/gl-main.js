@@ -7,7 +7,7 @@ var glCanvas;
 var orthoProjMat, persProjMat, viewMat, viewMatInverse, topViewMat,topViewMatInverse, normalMat;
 var ringCF, lightCF, eyePos;
 var axisBuff, tmpMat;
-var globalAxes;
+//var globalAxes;
 
 /* Vertex shader attribute variables */
 var posAttr, colAttr, normalAttr;
@@ -77,12 +77,12 @@ function main() {
     redrawNeeded = true;
   }, false);
   shinySlider.value = Math.floor(1 + Math.random() * shinySlider.max);
-  let redSlider = document.getElementById("redslider");
-  let greenSlider = document.getElementById("greenslider");
-  let blueSlider = document.getElementById("blueslider");
-  redSlider.addEventListener('input', colorChanged, false);
-  greenSlider.addEventListener('input', colorChanged, false);
-  blueSlider.addEventListener('input', colorChanged, false);
+  // let redSlider = document.getElementById("redslider");
+  // let greenSlider = document.getElementById("greenslider");
+  // let blueSlider = document.getElementById("blueslider");
+  // redSlider.addEventListener('input', colorChanged, false);
+  // greenSlider.addEventListener('input', colorChanged, false);
+  // blueSlider.addEventListener('input', colorChanged, false);
 
   let objxslider = document.getElementById("objx");
   let objyslider = document.getElementById("objy");
@@ -127,7 +127,7 @@ function main() {
     modelUnif = gl.getUniformLocation(prog, "modelCF");
     normalUnif = gl.getUniformLocation(prog, "normalMat");
     useLightingUnif = gl.getUniformLocation (prog, "useLighting");
-    objTintUnif = gl.getUniformLocation(prog, "objectTint");
+      //objTintUnif = gl.getUniformLocation(prog, "objectTint");
     ambCoeffUnif = gl.getUniformLocation(prog, "ambientCoeff");
     diffCoeffUnif = gl.getUniformLocation(prog, "diffuseCoeff");
     specCoeffUnif = gl.getUniformLocation(prog, "specularCoeff");
@@ -179,11 +179,11 @@ function main() {
     gl.bindBuffer(gl.ARRAY_BUFFER, lineBuff);
     gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(vertices), gl.STATIC_DRAW);
 
-    redSlider.value = Math.random();
-    greenSlider.value = Math.random();
-    blueSlider.value = Math.random();
-    objTint = vec3.fromValues(redSlider.value, greenSlider.value, blueSlider.value);
-    gl.uniform3fv(objTintUnif, objTint);
+    // redSlider.value = Math.random();
+    // greenSlider.value = Math.random();
+    // blueSlider.value = Math.random();
+      //objTint = vec3.fromValues(redSlider.value, greenSlider.value, blueSlider.value);
+      //gl.uniform3fv(objTintUnif, objTint);
     gl.uniform1f(ambCoeffUnif, ambCoeffSlider.value);
     gl.uniform1f(diffCoeffUnif, diffCoeffSlider.value);
     gl.uniform1f(specCoeffUnif, specCoeffSlider.value);
@@ -193,7 +193,7 @@ function main() {
     obj = new Torus(gl, 1.0, 0.3, 36, 24);
     let yellow = vec3.fromValues (0xe7/255, 0xf2/255, 0x4d/255);
     pointLight = new UniSphere(gl, 0.03, 3, yellow, yellow);
-    globalAxes = new Axes(gl);
+      //globalAxes = new Axes(gl);
     redrawNeeded = true;
     resizeHandler();
     render();
@@ -234,21 +234,21 @@ function ambColorChanged(ev) {
   redrawNeeded = true;
 }
 
-function colorChanged(ev) {
-  switch (ev.target.id) {
-    case 'redslider':
-      objTint[0] = ev.target.value;
-      break;
-    case 'greenslider':
-      objTint[1] = ev.target.value;
-      break;
-    case 'blueslider':
-      objTint[2] = ev.target.value;
-      break;
-  }
-  gl.uniform3fv(objTintUnif, objTint);
-  redrawNeeded = true;
-}
+// function colorChanged(ev) {
+//   switch (ev.target.id) {
+//     case 'redslider':
+//       objTint[0] = ev.target.value;
+//       break;
+//     case 'greenslider':
+//       objTint[1] = ev.target.value;
+//       break;
+//     case 'blueslider':
+//       objTint[2] = ev.target.value;
+//       break;
+//   }
+//   gl.uniform3fv(objTintUnif, objTint);
+//   redrawNeeded = true;
+// }
 
 function lightPosChanged(ev) {
   switch (ev.target.id) {
@@ -324,7 +324,7 @@ function render() {
 
 function drawScene() {
   gl.uniform1i (useLightingUnif, false);
-  gl.disableVertexAttribArray(normalAttr);
+//  gl.disableVertexAttribArray(normalAttr);
   gl.enableVertexAttribArray(colAttr);
 
   /* Use LINE_STRIP to mark light position */
@@ -335,7 +335,7 @@ function drawScene() {
   gl.drawArrays(gl.LINE_STRIP, 0, 4);
 
   /* draw the global coordinate frame */
-  globalAxes.draw(posAttr, colAttr, modelUnif, IDENTITY);
+//  globalAxes.draw(posAttr, colAttr, modelUnif, IDENTITY);
 
   /* Draw the light source (a sphere) using its own coordinate frame */
   pointLight.draw(posAttr, colAttr, modelUnif, lightCF);
@@ -343,9 +343,9 @@ function drawScene() {
   if (typeof obj !== 'undefined') {
     /* calculate normal matrix from ringCF */
     gl.uniform1i (useLightingUnif, true);
-    gl.disableVertexAttribArray(colAttr);
+//    gl.disableVertexAttribArray(colAttr);
     gl.enableVertexAttribArray(normalAttr);
-    obj.draw(posAttr, normalAttr, modelUnif, ringCF);
+      obj.draw(posAttr, colAttr, normalAttr, modelUnif, ringCF);
   }
 }
 
@@ -360,12 +360,12 @@ function draw3D() {
   drawScene();
   if (typeof obj !== 'undefined') {
     gl.uniform1i(useLightingUnif, false);
-    gl.disableVertexAttribArray(normalAttr);
+//    gl.disableVertexAttribArray(normalAttr);
     gl.enableVertexAttribArray(colAttr);
     if (showNormal)
       obj.drawNormal(posAttr, colAttr, modelUnif, ringCF);
     if (showLightVectors)
-      obj.drawVectorsTo(gl, lightPos, posAttr, colAttr, modelUnif, ringCF);
+	obj.drawVectorsTo(gl, lightPos, posAttr, colAttr, normalAttr, modelUnif, ringCF);
   }
 }
 
