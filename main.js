@@ -278,9 +278,6 @@ function orbit(planet){
   if(sumElapse >=40){
     sumElapse = 0;
   }
-  if((planet == "planet1") == true){
-    console.log("I'm stumped");
-  }
   if(planet == "planet0"){
     mat4.rotateX(object_hash[planet].coordFrame, object_hash[planet].coordFrame, Math.PI/5000);
   }
@@ -596,9 +593,7 @@ function drawScene() {
     gl.vertexAttribPointer(posAttr, 3, gl.FLOAT, false, 24, 0);
     gl.vertexAttribPointer(colAttr, 3, gl.FLOAT, false, 24, 12);
     gl.drawArrays(gl.LINE_STRIP, 0, 4);
-
-    // Draw the light source using its own coordinate frame
-    pointofLight.draw(posAttr, colAttr, modelUnif, lightCF);
+ 
 
     //gl.disableVertexAttribArray(colAttr);
     //gl.enableVertexAttribArray(normalAttr);
