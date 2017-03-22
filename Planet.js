@@ -11,7 +11,10 @@ class Planet {
      * @param {color} color the base color of a planet
      */
     constructor(gl,x,y,z,radius,subDiv,color,seed,startOctave,endOctave,persistence,coordFrame) {
-	if(typeof color === "undefined") color = vec3.fromValues(Math.random(), Math.random(), Math.random());
+	if(typeof color === "undefined"){
+		 color = vec3.fromValues(Math.random(), Math.random(), Math.random());
+		console.log("no color");
+	}
 	this.gl = gl;
 	this.x = x;
 	this.y = y;

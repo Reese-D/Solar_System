@@ -8,7 +8,9 @@ var glCanvas, textOut;
 var orthoProjMat, persProjMat, viewMat, topViewMat, view3Mat, view4mat, ringCF;
 var lightCF, lightPos, pointofLight, eyePos;
 var axisBuff, tmpMat, lineBuff;
-var globalAxes;
+var globalAxes, timeStamp;
+const orbitSpeed0 = 20;
+var sumElapse = 0;
 var current_view;
 /* Vertex shader attribute variables */
 var posAttr, colAttr, normalAttr;
@@ -22,7 +24,7 @@ var coneSpinAngle;
 var shaderProg;
 var object_hash, obj;
 var lightingComponentEnabled = [true, true, true];
-
+var index1 = 0;
 const DEFAULT_LIST_TEXT = "Select an object";
 
 function main() {
@@ -149,7 +151,7 @@ function main() {
 	    ringCF = mat4.create();
 	    lightCF = mat4.create();
 	    tmpMat = mat4.create();
-	    eyePos = vec3.fromValues(3,2,3);
+	    eyePos = vec3.fromValues(10,10,10);
 	    mat4.lookAt(viewMat,
 			eyePos, /* eye */
 			vec3.fromValues(0, 0, 0), /* focal point */
@@ -171,9 +173,9 @@ function main() {
 	    gl.uniformMatrix4fv(modelUnif, false, ringCF);
 	     
 	    lightPos = vec3.fromValues(0, 2, 2);
-	    eyexslider.value = lightPos[0];
-	    eyeyslider.value = lightPos[1];
-	    eyezslider.value = lightPos[2];
+	    eyexslider.value = 10;
+	    eyeyslider.value = 10;
+	    eyezslider.value = 10;
 	    mat4.fromTranslation(lightCF, lightPos);		
 	    lightxslider.value = lightPos[0];
 	    lightyslider.value = lightPos[1];
@@ -202,15 +204,19 @@ function main() {
 	    mat4.multiply(tmpMat, ringCF, tmpMat);   // tmp = ringCF * tmpMat
 
 	    //create a hash of all initial objects
+	    let yellow = vec3.fromValues(0xe7/255, 0xf2/255, 0x4d/255);
 	    object_hash = {};
 	    object_hash["spaceship0"] = new DilbySpaceship(gl, tmpMat);
-	    object_hash["shield0"] = new Planet(gl, 0, 0, 0, 1.0, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-	    let yellow = vec3.fromValues(0xe7/255, 0xf2/255, 0x4d/255);
-	    pointofLight = new UniSphere(gl, 0.03, 3, yellow, yellow);
+	    object_hash["planet0"] = new Planet(gl, 0, 0, 0, 0.6, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet1"] = new Planet(gl, 4, 1, 1, 0.3, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet2"] = new Planet(gl, 1, 5, -1, 0.3, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet3"] = new Planet(gl, -1, 1, 6, 0.3, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet4"] = new Planet(gl, 4, -6, 4, 0.4, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat)); 
 	    // modelUnif = gl.getUniformLocation(prog, "shield");
 	    addListToView();
 	    //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
 
+	    timeStamp = Date.now();
 	    coneSpinAngle = 0;
 	    resizeHandler();
 	    render();
@@ -262,6 +268,42 @@ function resizeHandler() {
     } else {
 	alert ("Window is too narrow!");
     }
+}
+
+function orbit(planet){
+  let now = Date.now();
+  let elapse = (now - timeStamp)/1000;
+  timeStamp = now; 
+  sumElapse = sumElapse + elapse;
+  if(sumElapse >=40){
+    sumElapse = 0;
+  }
+  if((planet == "planet1") == true){
+    console.log("I'm stumped");
+  }
+  if(planet == "planet0"){
+    mat4.rotateX(object_hash[planet].coordFrame, object_hash[planet].coordFrame, Math.PI/5000);
+  }
+  if(planet == "planet1"){	
+    let axisRot = vec3.fromValues(-.2, 1, 0);
+    let orbitDistance = sumElapse/5 * Math.PI;
+   mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+  }
+  if(planet == "planet2"){
+    let axisRot = vec3.fromValues(1, -.25, 0);
+    let orbitDistance = sumElapse/10 * Math.PI;
+   mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+  }
+  if(planet == "planet3"){
+    let axisRot = vec3.fromValues(1, .4, 0);
+    let orbitDistance = sumElapse/20 * Math.PI;
+   mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+  }
+  if(planet == "planet4"){
+    let axisRot = vec3.fromValues(0, .25, 1);
+    let orbitDistance = sumElapse/10 * Math.PI;
+   mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+  }
 }
 
 function ambColorChanged(ev) {
@@ -362,7 +404,7 @@ function parseSpaceship(objName){
 }
 
 function parseShield(objName){
-	var parsedObj = objName.split("shield");
+	var parsedObj = objName.split("planet");
 	var currentNum = parseInt(parsedObj[1]);
 	return currentNum;
 }
@@ -372,7 +414,7 @@ function cloneObject(){
 	var objName = getCurrentListObjectName();
 	var currentNum = objName.split("spaceship");
 	if(currentNum[1] == undefined){
-		currentNum = objName.split("shield");
+		currentNum = objName.split("planet");
 		shipOrShield = 1;
 	}
 	var tmpMat2 = mat4.clone(current_object.coordFrame);
@@ -404,7 +446,6 @@ function cloneObject(){
 	console.log(start);
 	console.log(start + cloneNum);
 	console.log(tmpMat2);
-	obj = new Torus(gl, 1, .3, 36, 24);
 	for(let i =start; i < start + cloneNum; i++){
 		var tmpMat2 = mat4.clone(tmpMat2);
 		mat4.multiply (tmpMat2, transpos, tmpMat2);
@@ -412,7 +453,7 @@ function cloneObject(){
 			console.log(i);
 			object_hash["spaceship" +i] = new DilbySpaceship(gl, tmpMat2);
 		}else{
-			object_hash["shield" + i] = new Planet(gl, 0, 0, 0, 1.0, 75, undefined, 112421442, 1, 4, 0.5, tmpMat2);
+			object_hash["planet" + i] = new Planet(gl, 0, 0, 0, 1.0, 75, undefined, 112421442, 1, 4, 0.5, tmpMat2);
 		}
 	}
 	addListToView(); 
@@ -535,7 +576,12 @@ function keyboardHandler(event) {
 
 function render() {
     gl.clear(gl.DEPTH_BUFFER_BIT | gl.COLOR_BUFFER_BIT);
-    draw3D();
+    draw3D(); 
+    orbit("planet0");
+    orbit("planet1");
+    orbit("planet2");
+    orbit("planet3");
+    orbit("planet4");
     requestAnimationFrame(render);
 }
 
@@ -554,10 +600,10 @@ function drawScene() {
     // Draw the light source using its own coordinate frame
     pointofLight.draw(posAttr, colAttr, modelUnif, lightCF);
 
-    gl.disableVertexAttribArray(colAttr);
-    gl.enableVertexAttribArray(normalAttr);
+    //gl.disableVertexAttribArray(colAttr);
+    //gl.enableVertexAttribArray(normalAttr);
     for(key in object_hash){
-	object_hash[key].draw(posAttr, normalAttr, modelUnif);
+	object_hash[key].draw(posAttr, colAttr, modelUnif);
     }
 }
 
@@ -565,8 +611,7 @@ function draw3D() {
     /* We must update the projection and view matrices in the shader */
     gl.uniformMatrix4fv(projUnif, false, persProjMat);
     gl.uniformMatrix4fv(viewUnif, false, current_view);
-    gl.viewport(0, 0, glCanvas.width, glCanvas.height);
-    //obj.drawVectorsTo(gl, lightPos, posAttr, colAttr, modelUnif, ringCF);
+    gl.viewport(0, 0, glCanvas.width, glCanvas.height); 
     drawScene();
 }
 
