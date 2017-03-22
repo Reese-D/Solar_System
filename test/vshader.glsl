@@ -12,7 +12,6 @@ uniform float diffuseCoeff;
 uniform float ambientCoeff;
 uniform float specularCoeff;
 uniform float shininess;
-uniform vec3 objectTint;
 uniform bool useLighting;
 uniform bvec3 isEnabled; // isEnabled: {ambient, diffuse, specular}
 
@@ -35,11 +34,11 @@ void main() {
         vec3 lightVecInEye = normalize(vec3(lightPosInEye - vertexPosInEye));
         vec3 normalInEye = normalize(normalMat * vertexNormal);
         if (isEnabled[0])
-           color += ambientCoeff * objectTint;
+           color += ambientCoeff * vertexCol;
         if (isEnabled[1]) { /* calculate diffuse component */
           /* calculate diffuse reflection */
           float diffuse = clamp (dot(lightVecInEye, normalInEye), 0.0, 1.0);
-          color += diffuse * diffuseCoeff * objectTint;
+          color += diffuse * diffuseCoeff * vertexCol;
         }
         if (isEnabled[2]) { /* calculate specular component */
           // Using eye-based calculation, the viewer is now at (0, 0, 0)
