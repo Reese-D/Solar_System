@@ -195,6 +195,7 @@ function main() {
 	    gl.uniform1f(specCoeffUnif, specCoeffSlider.value);
 	    gl.uniform1f(shininessUnif, shinySlider.value);
 
+	    gl.uniform3iv(isEnabledUnif, lightingComponentEnabled);
 	    //translate everything
 	    var yPos = 0.0;
 	    mat4.fromTranslation(tmpMat, vec3.fromValues(0, yPos, 0));
