@@ -147,7 +147,7 @@ function main() {
 	    topViewMatInverse = mat4.create();
 	    ringCF = mat4.create();
 	    normalMat = mat3.create();
-	    //    lightCF = mat4.create();
+	    lightCF = mat4.create();
 	    tmpMat = mat4.create();
 	    eyePos = vec3.fromValues(3, 2, 3);
 	    mat4.lookAt(viewMat,
@@ -167,17 +167,17 @@ function main() {
 	    eyexslider.value = lightPos[0];
 	    eyeyslider.value = lightPos[1];
 	    eyezslider.value = lightPos[2];
-	    // mat4.fromTranslation(lightCF, lightPos);
-	    // lightx.value = lightPos[0];
-	    // lighty.value = lightPos[1];
-	    // lightz.value = lightPos[2];
-	    // gl.uniform3fv (lightPosUnif, lightPos);
-	    // let vertices = [0, 0, 0, 1, 1, 1,
-	    //   lightPos[0], 0, 0, 1, 1, 1,
-	    //   lightPos[0], lightPos[1], 0, 1, 1, 1,
-	    //   lightPos[0], lightPos[1], lightPos[2], 1, 1, 1];
-	    // gl.bindBuffer(gl.ARRAY_BUFFER, lineBuff);
-	    // gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(vertices), gl.STATIC_DRAW);
+	    mat4.fromTranslation(lightCF, lightPos);
+	    lightx.value = lightPos[0];
+	    lighty.value = lightPos[1];
+	    lightz.value = lightPos[2];
+	    //gl.uniform3fv (lightPosUnif, lightPos);
+	    let vertices = [0, 0, 0, 1, 1, 1,
+	      lightPos[0], 0, 0, 1, 1, 1,
+	      lightPos[0], lightPos[1], 0, 1, 1, 1,
+	      lightPos[0], lightPos[1], lightPos[2], 1, 1, 1];
+	    gl.bindBuffer(gl.ARRAY_BUFFER, lineBuff);
+	    gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(vertices), gl.STATIC_DRAW);
 
 	    // redSlider.value = Math.random();
 	    // greenSlider.value = Math.random();
@@ -365,15 +365,17 @@ function draw3D() {
     gl.uniformMatrix3fv (normalUnif, false, normalMat);
     gl.viewport(0, 0, glCanvas.width/2, glCanvas.height);
     drawScene();
-    if (typeof obj !== 'undefined') {
-	gl.uniform1i(useLightingUnif, false);
-	//    gl.disableVertexAttribArray(normalAttr);
-	gl.enableVertexAttribArray(colAttr);
-	if (showNormal)
-	    obj.drawNormal(posAttr, colAttr, modelUnif, ringCF);
-	 if (showLightVectors)
+    objArr.forEach(function(obj){
+	if (typeof obj !== 'undefined') {
+	    gl.uniform1i(useLightingUnif, false);
+	    //    gl.disableVertexAttribArray(normalAttr);
+	    gl.enableVertexAttribArray(colAttr);
+	    if (showNormal)
+		obj.drawNormal(posAttr, colAttr, modelUnif, ringCF);
+	    if (showLightVectors)
 	 	obj.drawVectorsTo(gl, lightPos, posAttr, colAttr, normalAttr, modelUnif, ringCF);
-    }
+	}
+    });
 }
 
 function drawTopView() {

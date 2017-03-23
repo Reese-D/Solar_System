@@ -84,7 +84,7 @@ class GeometricObject {
 	gl.uniformMatrix4fv(modelUniform, false, coordFrame);
 	gl.vertexAttribPointer(vertexAttr, 3, gl.FLOAT, false, 24, 0);
 	gl.vertexAttribPointer(colorAttr, 3, gl.FLOAT, false, 24, 12);
-	gl.drawArrays(gl.LINES, 0, N);
+	gl.drawArrays(gl.LINES, 0, N*4);
 	gl.deleteBuffer(buff);
     }
 }
