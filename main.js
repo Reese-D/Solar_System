@@ -212,6 +212,7 @@ function main() {
 	    object_hash["planet2"] = new Planet(gl, 0.333, 1.666, -0.333, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
 	    object_hash["planet3"] = new Planet(gl, -0.333, 0.333, 2, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
 	    object_hash["planet4"] = new Planet(gl, 1.25, -2, 1.25, 0.125, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet5"] = new Planet(gl, 1.25, 0.333, 0.333, 0.0333, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
 	    tempShip = mat4.create();
 	    mat4.fromTranslation(tempShip, object_hash["spaceship0"].coordFrame, vec3.fromValues(1, 1, 0));
 	    mat4.fromScaling(object_hash["spaceship0"].coordFrame, vec3.fromValues(.1, .1, .1));
@@ -307,6 +308,17 @@ function orbit(planet){
     let axisRot = vec3.fromValues(0, .25, 1);
     let orbitDistance = sumElapse/40 * Math.PI;
     mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+  }
+  if(planet == "planet5"){
+    mat4.copy(object_hash[planet].coordFrame, object_hash["planet1"].coordFrame);
+    let axisRot = vec3.fromValues(-.2, 1, 0);
+    let orbitDistance = sumElapse/5 * Math.PI;
+    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);  
+  
+    let tempCoord = mat4.create();
+    mat4.rotateX(tempCoord, tempCoord, .5 * Math.PI);
+    mat4.multiply(object_hash[planet].coordFrame, tempCoord, object_hash[planet].coordFrame);
+    
   }
 }
 
@@ -586,6 +598,7 @@ function render() {
     orbit("planet2");
     orbit("planet3");
     orbit("planet4");
+    orbit("planet5");
     requestAnimationFrame(render);
 }
 
@@ -616,5 +629,4 @@ function draw3D() {
     gl.viewport(0, 0, glCanvas.width, glCanvas.height); 
     drawScene();
 }
-
 
