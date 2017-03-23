@@ -176,9 +176,9 @@ function main() {
 	    lightz.value = lightPos[2];
 	    //gl.uniform3fv (lightPosUnif, lightPos);
 	    let vertices = [0, 0, 0, 1, 1, 1,
-	      lightPos[0], 0, 0, 1, 1, 1,
-	      lightPos[0], lightPos[1], 0, 1, 1, 1,
-	      lightPos[0], lightPos[1], lightPos[2], 1, 1, 1];
+			    lightPos[0], 0, 0, 1, 1, 1,
+			    lightPos[0], lightPos[1], 0, 1, 1, 1,
+			    lightPos[0], lightPos[1], lightPos[2], 1, 1, 1];
 	    gl.bindBuffer(gl.ARRAY_BUFFER, lineBuff);
 	    gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(vertices), gl.STATIC_DRAW);
 
@@ -194,14 +194,23 @@ function main() {
 
             //create a hash of all initial objects
 	    let yellow = vec3.fromValues (0xe7/255, 0xf2/255, 0x4d/255);
+	    let white = vec3.fromValues(1,1,1);
 	    object_hash = {};
 	    //object_hash["spaceship0"] = new DilbySpaceship(gl, tmpMat);
-	    object_hash["planet0"] = new Planet(gl, 0, 0, 0, 0.2, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-	    object_hash["planet1"] = new Planet(gl, 1.25, 0.333, 0.333, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-	    object_hash["planet2"] = new Planet(gl, 0.333, 1.666, -0.333, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-	    object_hash["planet3"] = new Planet(gl, -0.333, 0.333, 2, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-	    object_hash["planet4"] = new Planet(gl, 1.25, -2, 1.25, 0.125, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-	    object_hash["planet5"] = new Planet(gl, 1.25, 0.333, 0.333, 0.0333, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet0"] = new Planet(gl, 0, 0, 0, 0.2, 75, yellow, 112442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet1"] = new Planet(gl, 0, 0, 0, 0.1, 75, white, 11221442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet2"] = new Planet(gl, 0, 0, 0, 0.1, 75, white, 1121442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet3"] = new Planet(gl, 0, 0, 0, 0.1, 75, white, 12421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet4"] = new Planet(gl, 0, 0, 0, 0.125, 75, yellow, 11221442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet5"] = new Planet(gl, 0, 0, 0, 0.0333, 75, white, 21442, 1, 4, 0.5, mat4.clone(tmpMat));
+
+	    object_hash["planet1"].coordFrame = mat4.fromTranslation(object_hash["planet1"].coordFrame, vec3.fromValues(-1,0,0));
+	    object_hash["planet2"].coordFrame = mat4.fromTranslation(object_hash["planet2"].coordFrame, vec3.fromValues(0.6,0,0));
+	    //mat4.translate(object_hash["planet2"].coordFrame, object_hash["planet2"].coordFrame, vec3.fromValues(0,0.6,0));
+	    object_hash["planet3"].coordFrame = mat4.fromTranslation(object_hash["planet3"].coordFrame, vec3.fromValues(0,0,-0.3));
+	    object_hash["planet4"].coordFrame = mat4.fromTranslation(object_hash["planet4"].coordFrame, vec3.fromValues(0,-0.3,0.3));
+	    object_hash["planet5"].coordFrame = mat4.fromTranslation(object_hash["planet5"].coordFrame, vec3.fromValues(-0.3,0.3,0));
+	    
 	    //tempShip = mat4.create();
 	    //mat4.fromTranslation(tempShip, object_hash["spaceship0"].coordFrame, vec3.fromValues(1, 1, 0));
 	    //mat4.fromScaling(object_hash["spaceship0"].coordFrame, vec3.fromValues(.1, .1, .1));
@@ -246,8 +255,8 @@ function getCurrentListObjectName(){
 }
 
 function deleteCurrentListObject(){
-        delete object_hash[getCurrentListObjectName()];
-        addListToView();
+    delete object_hash[getCurrentListObjectName()];
+    addListToView();
 }
 
 
@@ -270,48 +279,100 @@ function resizeHandler() {
 }
 
 function orbit(planet){
-  let now = Date.now();
-  let elapse = (now - timeStamp)/1000;
-  timeStamp = now; 
-  sumElapse = sumElapse + elapse;
-  if(sumElapse >=80){
-    sumElapse = 0;
-  }
-  if(planet == "planet0"){
-    mat4.rotateX(object_hash[planet].coordFrame, object_hash[planet].coordFrame, Math.PI/5000);
-  }
-  if(planet == "planet1"){	
-    let axisRot = vec3.fromValues(-.2, 1, 0);
-    let orbitDistance = sumElapse/5 * Math.PI;
-    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot); 
-  }
-  if(planet == "planet2"){
-    let axisRot = vec3.fromValues(1, -.25, 0);
-    let orbitDistance = sumElapse/10 * Math.PI;
-    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
-  }
-  if(planet == "planet3"){
-    let axisRot = vec3.fromValues(1, .4, 0);
-    let orbitDistance = sumElapse/20 * Math.PI;
-     mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
-  }
-  if(planet == "planet4"){
-    let axisRot = vec3.fromValues(0, .25, 1);
-    let orbitDistance = sumElapse/40 * Math.PI;
-    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
-  }
-  if(planet == "planet5"){
-    mat4.copy(object_hash[planet].coordFrame, object_hash["planet1"].coordFrame);
-    let axisRot = vec3.fromValues(-.2, 1, 0);
-    let orbitDistance = sumElapse/5 * Math.PI;
-    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);  
-  
-    let tempCoord = mat4.create();
-    mat4.rotateX(tempCoord, tempCoord, .5 * Math.PI);
-    mat4.multiply(object_hash[planet].coordFrame, tempCoord, object_hash[planet].coordFrame);
+    let rotateX = 0.00;
+    let rotateY = 0.00;
+    let orbitSpeed = 1;
+
+    let now = Date.now();
+    let elapse = (now - timeStamp)/1000;
+    timeStamp = now; 
+    sumElapse = sumElapse + elapse;
     
-  }
-  redrawNeeded = true;
+    switch(planet){
+    case "planet0":
+	return;
+    case "planet1":
+	rotateY = 0.5
+	orbitSpeed = 1.6
+	break;
+    case "planet2":
+	rotateY = 0.8
+	orbitSpeed = 0.9
+	break;
+    case "planet3":
+	orbitSpeed = 0.6
+	rotateY = 0.4
+	roateX = 0.4
+	break;
+    case "planet4":
+	rotateX = 0;
+	rotateY = 0.3;
+	orbitSpeed = 2;
+	break;
+    case "planet5":
+	rotateY = 0.2;
+	orbitSpeed = 1.1
+	break;
+    default:
+	break;
+    }
+    rotateX = (rotateX * sumElapse) % 2*Math.PI
+    rotateY = (rotateY * sumElapse) % 2*Math.PI
+    
+    let x = 0 + orbitSpeed * Math.cos(rotateX) * Math.sin(rotateY);
+    let y = 0 + orbitSpeed * Math.sin(rotateX) * Math.sin(rotateY);
+    let z = 0 + orbitSpeed * Math.cos(rotateY);
+    let axisRot = vec3.fromValues(x,y,z);
+    console.log(axisRot);
+    let crdFrame = object_hash[planet].coordFrame;
+    mat4.translate(crdFrame, object_hash["planet0"].coordFrame, axisRot);
+
+    // let now = Date.now();
+    // let elapse = (now - timeStamp)/1000;
+    // timeStamp = now; 
+    // sumElapse = sumElapse + elapse;
+    // let crdFrame = object_hash[planet].coordFrame
+    // if(sumElapse >=80){
+    // 	sumElapse = 0;
+    // }
+    // if(planet == "planet0"){
+    // 	mat4.rotateX(crdFrame, crdFrame, Math.PI/5000);
+    // }
+    // if(planet == "planet1"){	
+    // 	let axisRot = vec3.fromValues(1, 1, 0);
+    // 	let orbitDistance = 0.01//sumElapse/40 * Math.PI;
+    // 	let rotate = mat4.fromRotation(mat4.create(), Math.PI/8, vec3.fromValues(1,0,0));
+    // 	//mat4.multiply(crdFrame, mat4.create(),rotate);
+    // 	//mat4.rotate(crdFrame, crdFrame, orbitDistance, axisRot);
+    // 	mat4.translate(crdFrame,crdFrame, vec3.fromValues(0.001,0,0))
+    // }
+    // if(planet == "planet2"){
+    // 	let axisRot = vec3.fromValues(1, 1, 0);
+    // 	let orbitDistance = 0.01//sumElapse/10 * Math.PI;
+    // 	mat4.rotate(crdFrame, crdFrame, orbitDistance, axisRot);
+    // }
+    // if(planet == "planet3"){
+    // 	let axisRot = vec3.fromValues(1, .4, 0);
+    // 	let orbitDistance = 0.02//sumElapse/20 * Math.PI;
+    // 	mat4.rotate(crdFrame, crdFrame, orbitDistance, axisRot);
+    // }
+    // if(planet == "planet4"){
+    // 	let axisRot = vec3.fromValues(0, 0, 0.25);
+    // 	let orbitDistance = 0.03//sumElapse/40 * Math.PI;
+    // 	mat4.rotate(crdFrame, crdFrame, orbitDistance, axisRot);
+    // }
+    // if(planet == "planet5"){
+    // 	//mat4.copy(crdFrame, object_hash["planet1"].coordFrame);
+    // 	let axisRot = vec3.fromValues(-.2, 1, 0);
+    // 	let orbitDistance = 0.1//sumElapse/5 * Math.PI;
+    // 	mat4.rotate(crdFrame, crdFrame, orbitDistance, axisRot);  
+	
+    // 	let tempCoord = mat4.create();
+    // 	//mat4.rotateX(tempCoord, tempCoord, .5 * Math.PI);
+    // 	//mat4.multiply(crdFrame, tempCoord, crdFrame);
+	
+    // }
+     redrawNeeded = true;
 }
 
 
@@ -447,8 +508,21 @@ function drawScene() {
     gl.uniform1i (useLightingUnif, true);
     //    gl.disableVertexAttribArray(colAttr);
     gl.enableVertexAttribArray(normalAttr);
+    let planet1 = object_hash["planet0"]
+    let planet2 = object_hash["planet4"]
+    planet1Origin = vec3.fromValues(planet1.x, planet1.y, planet1.z);
+     vec3.transformMat4(planet1Origin, planet1Origin, planet1.coordFrame);
+
+    planet2Origin = vec3.fromValues(planet2.x, planet2.y, planet2.z); 
+     vec3.transformMat4(planet2Origin, planet2Origin, planet2.coordFrame);
+
+
+    let arr = [planet1Origin[0], planet1Origin[1], planet1Origin[2], planet2Origin[0], planet2Origin[1], planet2Origin[2]]
+    //    let arr = [planet1Origin[0], planet1Origin[1], planet1Origin[2],planet1Origin[0], planet1Origin[1], planet1Origin[2]]
+//    let arr = [0.1,0.1,0.1,0.1,0.1,0.1]
+    gl.uniform3fv(lightPosUnif, arr);
     for(key in object_hash){
-        object_hash[key].draw(posAttr, colAttr,  normalAttr, modelUnif, ringCF);
+        object_hash[key].draw(posAttr, colAttr, normalAttr, modelUnif);
     }
     orbit("planet0");
     orbit("planet1");
@@ -460,9 +534,9 @@ function drawScene() {
 
 function draw3D() {
     /* We must update the projection and view matrices in the shader */
-    let arr = [-0,-0,-2,
-	       -2,-2,-2]
-    gl.uniform3fv(lightPosUnif, arr);
+    //-2,-2,-2]
+
+    
     
     gl.uniformMatrix4fv(projUnif, false, persProjMat);
     gl.uniformMatrix4fv(viewUnif, false, viewMat);
@@ -483,8 +557,8 @@ function draw3D() {
 }
 
 function drawTopView() {
-    let arr = [-1,-1,-1,
-	       -1,-1,-1]
+    let arr = [0,0,0,0,0,0]
+
     gl.uniform3fv(lightPosUnif, arr);
 
     /* We must update the projection and view matrices in the shader */

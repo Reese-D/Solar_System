@@ -11,9 +11,8 @@ class Planet extends GeometricObject {
      * @param {color} color the base color of a planet
      */
     
-    constructor(gl,x,y,z,radius,subDiv,color,seed,startOctave,endOctave,persistence,coordFrame) {
-	//super(gl,coordFrame);
-	super(gl);
+    constructor(gl,x,y,z,radius,subDiv,color,seed,startOctave,endOctave,persistence,coordFrame,lightStrength) {
+	super(gl,coordFrame);
 	if(typeof color === "undefined") color = vec3.fromValues(Math.random(), Math.random(), Math.random());
 	this.gl = gl;
 	this.x = x;
@@ -73,7 +72,7 @@ class Planet extends GeometricObject {
 		let mult = 2
 		let col = this.p5.noise(currPoint[0].x*mult,currPoint[0].y*mult,currPoint[0].z*mult);
 		//let col = 0.2
-		this.vertices.push(col,col, col)
+		this.vertices.push(col * this.color[0], col * this.color[1], col * this.color[2])
 		this.vertices.push(currPoint[1].x, currPoint[1].y, currPoint[1].z);
 
 		this.normalLines.push(currPoint[0].x,currPoint[0].y,currPoint[0].z, 1, 1, 1);  /* (x,y,z)   (r,g,b) */
@@ -123,10 +122,10 @@ class Planet extends GeometricObject {
 	let origin = vec3.fromValues(0,0,0)
 	
 	let surfacePoint = vec3.fromValues(x,y,z);
-	var norm = vec3.create()
+	var norm = vec3.create();
 	vec3.subtract(norm, surfacePoint, origin);
 	vec3.normalize(norm, norm);
-	//norm = norm + surfacePoint;
+	
 	//console.log(norm);
 	// let n1 = vec3.create();
 	// let n2 = vec3.create();

@@ -2,8 +2,8 @@
  * Created by Hans Dulimarta on 2/24/17.
  */
 class GeometricObject {
-    constructor(gl, coordFrame) {
-	this.coordFrame = coordFrame;
+    constructor(gl, crdFrame) {
+	this.coordFrame = crdFrame;
 	this.NORMAL_SCALE = 0.3;
     }
 
@@ -28,7 +28,7 @@ class GeometricObject {
 	   the stride distance between one group to the next is 24 bytes */
 	gl.vertexAttribPointer(vertexAttr, 3, gl.FLOAT, false, 36, 0);
 	gl.vertexAttribPointer(colorAttr, 3, gl.FLOAT, false, 36, 12);
-	gl.vertexAttribPointer(normalAttr, 3, gl.FLOAT, false, 36, 24);
+ 	gl.vertexAttribPointer(normalAttr, 3, gl.FLOAT, false, 36, 24);
 
 	for (let k = 0; k < this.indices.length; k++) {
 	    let obj = this.indices[k];
