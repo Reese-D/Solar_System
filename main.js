@@ -31,7 +31,7 @@ function main() {
     glCanvas = document.getElementById("gl-canvas");
     textOut = document.getElementById("msg");
     gl = WebGLUtils.setupWebGL(glCanvas, null);
-    axisBuff = gl.createBuffer()
+    axisBuff = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, axisBuff);
      let normalCheckBox = document.getElementById("shownormal");
     normalCheckBox.addEventListener('change', ev => {
@@ -207,15 +207,22 @@ function main() {
 	    let yellow = vec3.fromValues(0xe7/255, 0xf2/255, 0x4d/255);
 	    object_hash = {};
 	    object_hash["spaceship0"] = new DilbySpaceship(gl, tmpMat);
-	    object_hash["planet0"] = new Planet(gl, 0, 0, 0, 0.6, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-	    object_hash["planet1"] = new Planet(gl, 4, 1, 1, 0.3, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-	    object_hash["planet2"] = new Planet(gl, 1, 5, -1, 0.3, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-	    object_hash["planet3"] = new Planet(gl, -1, 1, 6, 0.3, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
-	    object_hash["planet4"] = new Planet(gl, 4, -6, 4, 0.4, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat)); 
+	    object_hash["planet0"] = new Planet(gl, 0, 0, 0, 0.2, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet1"] = new Planet(gl, 1.25, 0.333, 0.333, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet2"] = new Planet(gl, 0.333, 1.666, -0.333, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet3"] = new Planet(gl, -0.333, 0.333, 2, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet4"] = new Planet(gl, 1.25, -2, 1.25, 0.125, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    tempShip = mat4.create();
+	    mat4.fromTranslation(tempShip, object_hash["spaceship0"].coordFrame, vec3.fromValues(1, 1, 0));
+	    mat4.fromScaling(object_hash["spaceship0"].coordFrame, vec3.fromValues(.1, .1, .1));
+	    mat4.multiply(object_hash["spaceship0"].coordFrame, tempShip,object_hash["spaceship0"].coordFrame);
 	    // modelUnif = gl.getUniformLocation(prog, "shield");
 	    addListToView();
 	    //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
-
+	
+	    console.log(object_hash["planet1"].coordFrame);
+	    console.log(object_hash["planet2"].coordFrame);
+	    console.log(object_hash["planet3"].coordFrame);
 	    timeStamp = Date.now();
 	    coneSpinAngle = 0;
 	    resizeHandler();
@@ -275,7 +282,7 @@ function orbit(planet){
   let elapse = (now - timeStamp)/1000;
   timeStamp = now; 
   sumElapse = sumElapse + elapse;
-  if(sumElapse >=40){
+  if(sumElapse >=80){
     sumElapse = 0;
   }
   if(planet == "planet0"){
@@ -284,22 +291,22 @@ function orbit(planet){
   if(planet == "planet1"){	
     let axisRot = vec3.fromValues(-.2, 1, 0);
     let orbitDistance = sumElapse/5 * Math.PI;
-   mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot); 
   }
   if(planet == "planet2"){
     let axisRot = vec3.fromValues(1, -.25, 0);
     let orbitDistance = sumElapse/10 * Math.PI;
-   mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
   }
   if(planet == "planet3"){
     let axisRot = vec3.fromValues(1, .4, 0);
     let orbitDistance = sumElapse/20 * Math.PI;
-   mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+     mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
   }
   if(planet == "planet4"){
     let axisRot = vec3.fromValues(0, .25, 1);
-    let orbitDistance = sumElapse/10 * Math.PI;
-   mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+    let orbitDistance = sumElapse/40 * Math.PI;
+    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
   }
 }
 

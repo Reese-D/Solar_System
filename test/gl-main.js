@@ -8,7 +8,7 @@ var orthoProjMat, persProjMat, viewMat, viewMatInverse, topViewMat,topViewMatInv
 var ringCF, lightCF, eyePos;
 var axisBuff, tmpMat;
 //var globalAxes;
-
+var object_hash;
 /* Vertex shader attribute variables */
 var posAttr, colAttr, normalAttr;
 
