@@ -10,7 +10,9 @@ class Planet extends GeometricObject {
      * @param {int} subDiv the number of subdivisions for the planet, number of points will be subDiv^2
      * @param {color} color the base color of a planet
      */
+    
     constructor(gl,x,y,z,radius,subDiv,color,seed,startOctave,endOctave,persistence,coordFrame) {
+	//super(gl,coordFrame);
 	super(gl);
 	if(typeof color === "undefined") color = vec3.fromValues(Math.random(), Math.random(), Math.random());
 	this.gl = gl;
@@ -52,20 +54,34 @@ class Planet extends GeometricObject {
 	this.vbuff = this.gl.createBuffer();
 	this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vbuff);
      	this.gl.bufferData(this.gl.ARRAY_BUFFER, Float32Array.from(this.vertices), this.gl.STATIC_DRAW);
+	this.nbuff = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, this.nbuff);
+	gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(this.normalLines), gl.STATIC_DRAW);
+
     }
 
+
     pushVertices(){
+	this.normalLines = []
 	this.p5.noiseDetail(8,0.5)
 	for(let i = 0; i < this.points.length; i++){
 	    for(let t = 0; t < this.points[i].length; t++){
 		let currPoint = this.points[i][t];
-		this.vertices.push(currPoint.x, currPoint.y, currPoint.z);
+		this.vertices.push(currPoint[0].x, currPoint[0].y, currPoint[0].z);
 		//let col = this.getNoise(i/this.points.length,t/this.points[i].length)
 		//let col = (this.getNoise(i,t) + 2) / 4;
 		let mult = 2
-		let col = this.p5.noise(currPoint.x*mult,currPoint.y*mult,currPoint.z*mult);
+		let col = this.p5.noise(currPoint[0].x*mult,currPoint[0].y*mult,currPoint[0].z*mult);
 		//let col = 0.2
 		this.vertices.push(col,col, col)
+		this.vertices.push(currPoint[1].x, currPoint[1].y, currPoint[1].z);
+
+		this.normalLines.push(x, y, h, 1, 1, 1);  /* (x,y,z)   (r,g,b) */
+		this.normalLines.push (
+		    x + this.NORMAL_SCALE * norm[0],
+		    y + this.NORMAL_SCALE * norm[1],
+		    h + this.NORMAL_SCALE * norm[2], 1, 1, 1);
+
 		//this.vertices.push(currPoint.color[0], currPoint.color[1], currPoint.color[2]);
 	    }
 	}
@@ -102,17 +118,34 @@ class Planet extends GeometricObject {
 	let x = this.x + this.radius * Math.cos(rotationX) * Math.sin(rotationY);
 	let y = this.y + this.radius * Math.sin(rotationX) * Math.sin(rotationY);
 	let z = this.z + this.radius * Math.cos(rotationY);
+
+	/* calculate the tangent vectors */
+	let n1 = vec3.create();
+	let n2 = vec3.create();
+        vec3.set (n1, -Math.sin(rotationX), Math.cos(rotationX), 0);
+        vec3.set (n2, -Math.sin(rotationY) * Math.cos(rotationX),
+                      -Math.sin(rotationY) * Math.sin(rotationX),
+                       Math.cos(rotationY));
+        /* n1 is tangent along major circle, n2 is tangent along the minor circle */
+        vec3.cross (norm, n1, n2);
+        vec3.normalize(norm, norm);
+        /* the next three floats are vertex normal */
+	
+        
+
 	this.p5.noiseDetail(16, 0.5)
+
 	let mult = 2;
 	let tmp_noise = this.p5.noise(x*mult,y*mult,z*mult);
 	let noise_influence = tmp_noise * tmp_noise;
 	let uninfluenced = 1 - noise_influence;
 	let r_noise =  tmp_noise * this.radius * noise_influence;
+	
 	x = this.x + (this.radius*uninfluenced + r_noise) * Math.cos(rotationX) * Math.sin(rotationY);
 	y = this.y + (this.radius*uninfluenced + r_noise) * Math.sin(rotationX) * Math.sin(rotationY);
 	z = this.z + (this.radius*uninfluenced + r_noise) * Math.cos(rotationY);	
-
-	return new Point(x,y,z,color);
+	
+	return [new Point(x,y,z,undefined), new Point(norm[0],norm[1],norm[2],undefined)]
     }
     
     /*
