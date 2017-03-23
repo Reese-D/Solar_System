@@ -297,7 +297,7 @@ function orbit(planet){
 	break;
     case "planet2":
 	rotateY = 0.8
-	orbitSpeed = 0.9
+	orbitSpeed = 0.3g
 	break;
     case "planet3":
 	orbitSpeed = 0.6
@@ -325,7 +325,12 @@ function orbit(planet){
     let axisRot = vec3.fromValues(x,y,z);
     console.log(axisRot);
     let crdFrame = object_hash[planet].coordFrame;
-    mat4.translate(crdFrame, object_hash["planet0"].coordFrame, axisRot);
+    if(planet == "planet2"){
+	mat4.translate(crdFrame, object_hash["planet1"].coordFrame, axisRot);
+    }else{
+	mat4.translate(crdFrame, object_hash["planet0"].coordFrame, axisRot);
+    }
+
 
     // let now = Date.now();
     // let elapse = (now - timeStamp)/1000;
