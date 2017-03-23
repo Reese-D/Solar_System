@@ -297,7 +297,7 @@ function orbit(planet){
 	break;
     case "planet2":
 	rotateY = 0.8
-	orbitSpeed = 0.3g
+	orbitSpeed = 0.3
 	break;
     case "planet3":
 	orbitSpeed = 0.6
