@@ -21,7 +21,10 @@ const IDENTITY = mat4.create();
 var objArr, lineBuff, normBuff, objTint, pointLight;
 var shaderProg, redrawNeeded, showNormal, showLightVectors;
 var lightingComponentEnabled = [true, true, true];
-
+var object_hash;
+var timeStamp;
+var sumElapse = 0;
+const DEFAULT_LIST_TEXT = "Select an object";
 function main() {
     glCanvas = document.getElementById("gl-canvas");
 
@@ -189,18 +192,65 @@ function main() {
 	    gl.uniform1f(specCoeffUnif, specCoeffSlider.value);
 	    gl.uniform1f(shininessUnif, shinySlider.value);
 
+            //create a hash of all initial objects
+	    let yellow = vec3.fromValues (0xe7/255, 0xf2/255, 0x4d/255);
+	    object_hash = {};
+	    //object_hash["spaceship0"] = new DilbySpaceship(gl, tmpMat);
+	    object_hash["planet0"] = new Planet(gl, 0, 0, 0, 0.2, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet1"] = new Planet(gl, 1.25, 0.333, 0.333, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet2"] = new Planet(gl, 0.333, 1.666, -0.333, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet3"] = new Planet(gl, -0.333, 0.333, 2, 0.1, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet4"] = new Planet(gl, 1.25, -2, 1.25, 0.125, 75, yellow, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    object_hash["planet5"] = new Planet(gl, 1.25, 0.333, 0.333, 0.0333, 75, undefined, 112421442, 1, 4, 0.5, mat4.clone(tmpMat));
+	    //tempShip = mat4.create();
+	    //mat4.fromTranslation(tempShip, object_hash["spaceship0"].coordFrame, vec3.fromValues(1, 1, 0));
+	    //mat4.fromScaling(object_hash["spaceship0"].coordFrame, vec3.fromValues(.1, .1, .1));
+	    //mat4.multiply(object_hash["spaceship0"].coordFrame, tempShip,object_hash["spaceship0"].coordFrame);
+	    // modelUnif = gl.getUniformLocation(prog, "shield");
+	    addListToView();
+	    //mat4.rotateX(ringCF, ringCF, -Math.PI/2);
+	    
+
+
 	    gl.uniform3iv (isEnabledUnif, lightingComponentEnabled);
 	    objArr = []
 	    objArr.push(new Torus(gl, 1.0, 0.3, 36, 24));
 	    //objArr.push(new Planet(gl,0,0,0,0.5,200,undefined,12312,1,4,0.75,mat4.create()))
-	    let yellow = vec3.fromValues (0xe7/255, 0xf2/255, 0x4d/255);
 	    //pointLight = new UniSphere(gl, 0.03, 3, yellow, yellow);
 	    //globalAxes = new Axes(gl);
+	    timeStamp = Date.now();
 	    redrawNeeded = true;
 	    resizeHandler();
 	    render();
 	});
 }
+
+function addListToView(){
+    selector = $(".object_list");
+    selector.empty();
+    selector.append("<option disabled selected>" + DEFAULT_LIST_TEXT + "</option>");
+    for(key in object_hash){
+        selector.append("<option>" + key + "</option>");
+    }
+}
+
+function getCurrentListObject(){
+    selector = $("option:selected");
+    if(!(selector.text() in object_hash)){
+        return undefined;
+    }
+    return object_hash[selector.text()];
+}
+
+function getCurrentListObjectName(){
+    return $("option:selected").text();
+}
+
+function deleteCurrentListObject(){
+        delete object_hash[getCurrentListObjectName()];
+        addListToView();
+}
+
 
 function resizeHandler() {
     glCanvas.width = window.innerWidth;
@@ -219,6 +269,52 @@ function resizeHandler() {
     }
 
 }
+
+function orbit(planet){
+  let now = Date.now();
+  let elapse = (now - timeStamp)/1000;
+  timeStamp = now; 
+  sumElapse = sumElapse + elapse;
+  if(sumElapse >=80){
+    sumElapse = 0;
+  }
+  if(planet == "planet0"){
+    mat4.rotateX(object_hash[planet].coordFrame, object_hash[planet].coordFrame, Math.PI/5000);
+  }
+  if(planet == "planet1"){	
+    let axisRot = vec3.fromValues(-.2, 1, 0);
+    let orbitDistance = sumElapse/5 * Math.PI;
+    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot); 
+  }
+  if(planet == "planet2"){
+    let axisRot = vec3.fromValues(1, -.25, 0);
+    let orbitDistance = sumElapse/10 * Math.PI;
+    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+  }
+  if(planet == "planet3"){
+    let axisRot = vec3.fromValues(1, .4, 0);
+    let orbitDistance = sumElapse/20 * Math.PI;
+     mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+  }
+  if(planet == "planet4"){
+    let axisRot = vec3.fromValues(0, .25, 1);
+    let orbitDistance = sumElapse/40 * Math.PI;
+    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);
+  }
+  if(planet == "planet5"){
+    mat4.copy(object_hash[planet].coordFrame, object_hash["planet1"].coordFrame);
+    let axisRot = vec3.fromValues(-.2, 1, 0);
+    let orbitDistance = sumElapse/5 * Math.PI;
+    mat4.fromRotation(object_hash[planet].coordFrame, orbitDistance, axisRot);  
+  
+    let tempCoord = mat4.create();
+    mat4.rotateX(tempCoord, tempCoord, .5 * Math.PI);
+    mat4.multiply(object_hash[planet].coordFrame, tempCoord, object_hash[planet].coordFrame);
+    
+  }
+  redrawNeeded = true;
+}
+
 
 function ambColorChanged(ev) {
     switch (ev.target.id) {
@@ -321,6 +417,13 @@ function render() {
 	// coneSpinAngle += 1;  /* add 1 degree */
 	redrawNeeded = false;
     }
+    orbit("planet0");
+    orbit("planet1");
+    orbit("planet2");
+    orbit("planet3");
+    orbit("planet4");
+    orbit("planet5");
+
     requestAnimationFrame(render);
 }
 
@@ -347,8 +450,17 @@ function drawScene() {
 	    gl.uniform1i (useLightingUnif, true);
 	    //    gl.disableVertexAttribArray(colAttr);
 	    gl.enableVertexAttribArray(normalAttr);
-	    obj.draw(posAttr, colAttr, normalAttr, modelUnif, ringCF);
+	    //obj.draw(posAttr, colAttr, normalAttr, modelUnif, ringCF);
+	    for(key in object_hash){
+	    	object_hash[key].draw(posAttr, colAttr,  normalAttr, modelUnif, ringCF);
+	    }
 	}
+        orbit("planet0");
+        orbit("planet1");
+        orbit("planet2");
+        orbit("planet3");
+        orbit("planet4");
+        orbit("planet5");
     });
 }
 

@@ -76,11 +76,11 @@ class Planet extends GeometricObject {
 		this.vertices.push(col,col, col)
 		this.vertices.push(currPoint[1].x, currPoint[1].y, currPoint[1].z);
 
-		this.normalLines.push(x, y, h, 1, 1, 1);  /* (x,y,z)   (r,g,b) */
+		this.normalLines.push(currPoint[0].x, currPoint[0].y, currPoint[0].z, 1, 1, 1);  /* (x,y,z)   (r,g,b) */
 		this.normalLines.push (
-		    x + this.NORMAL_SCALE * norm[0],
-		    y + this.NORMAL_SCALE * norm[1],
-		    h + this.NORMAL_SCALE * norm[2], 1, 1, 1);
+		    currPoint[0].x + this.NORMAL_SCALE * norm[0],
+		    currPoint[0].y + this.NORMAL_SCALE * norm[1],
+		    currPoint[0].z + this.NORMAL_SCALE * norm[2], 1, 1, 1);
 
 		//this.vertices.push(currPoint.color[0], currPoint.color[1], currPoint.color[2]);
 	    }
