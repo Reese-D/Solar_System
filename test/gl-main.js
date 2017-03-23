@@ -8,7 +8,7 @@ var orthoProjMat, persProjMat, viewMat, viewMatInverse, topViewMat,topViewMatInv
 var ringCF, lightCF, eyePos;
 var axisBuff, tmpMat;
 //var globalAxes;
-
+var object_hash;
 /* Vertex shader attribute variables */
 var posAttr, colAttr, normalAttr;
 
@@ -194,6 +194,10 @@ function main() {
     let yellow = vec3.fromValues (0xe7/255, 0xf2/255, 0x4d/255);
     pointLight = new UniSphere(gl, 0.03, 3, yellow, yellow);
       //globalAxes = new Axes(gl);
+	
+    object_hash = {};
+    object_hash["spaceship0"] = new DilbySpaceship(gl, tmpMat);
+
     redrawNeeded = true;
     resizeHandler();
     render();
@@ -343,10 +347,11 @@ function drawScene() {
   if (typeof obj !== 'undefined') {
     /* calculate normal matrix from ringCF */
     gl.uniform1i (useLightingUnif, true);
-//    gl.disableVertexAttribArray(colAttr);
+    //gl.disableVertexAttribArray(colAttr);
     gl.enableVertexAttribArray(normalAttr);
       obj.draw(posAttr, colAttr, normalAttr, modelUnif, ringCF);
   }
+  
 }
 
 function draw3D() {

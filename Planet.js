@@ -67,7 +67,7 @@ class Planet {
 		let mult = 2
 		let col = this.p5.noise(currPoint.x*mult,currPoint.y*mult,currPoint.z*mult);
 		//let col = 0.2
-		this.vertices.push(col,col, col)
+		this.vertices.push(col * this.color[0], col * this.color[1], col * this.color[2])
 		//this.vertices.push(currPoint.color[0], currPoint.color[1], currPoint.color[2]);
 	    }
 	}
