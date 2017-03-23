@@ -192,7 +192,7 @@ function main() {
 	    gl.uniform3iv (isEnabledUnif, lightingComponentEnabled);
 	    objArr = []
 	    objArr.push(new Torus(gl, 1.0, 0.3, 36, 24));
-	    //objArr.push(new Planet(gl,0,0,0,0.5,200,undefined,12312,1,4,0.75,mat4.create()))
+	    objArr.push(new Planet(gl,0,0,0,0.5,200,undefined,12312,1,4,0.75,mat4.create()))
 	    let yellow = vec3.fromValues (0xe7/255, 0xf2/255, 0x4d/255);
 	    //pointLight = new UniSphere(gl, 0.03, 3, yellow, yellow);
 	    //globalAxes = new Axes(gl);

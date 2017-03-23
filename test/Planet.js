@@ -76,11 +76,11 @@ class Planet extends GeometricObject {
 		this.vertices.push(col,col, col)
 		this.vertices.push(currPoint[1].x, currPoint[1].y, currPoint[1].z);
 
-		this.normalLines.push(x, y, h, 1, 1, 1);  /* (x,y,z)   (r,g,b) */
+		this.normalLines.push(currPoint[0].x,currPoint[0].y,currPoint[0].z, 1, 1, 1);  /* (x,y,z)   (r,g,b) */
 		this.normalLines.push (
-		    x + this.NORMAL_SCALE * norm[0],
-		    y + this.NORMAL_SCALE * norm[1],
-		    h + this.NORMAL_SCALE * norm[2], 1, 1, 1);
+		    currPoint[0].x + this.NORMAL_SCALE * currPoint[1].x,
+		    currPoint[0].y + this.NORMAL_SCALE * currPoint[1].y,
+		    currPoint[0].z + this.NORMAL_SCALE * currPoint[1].z, 1, 1, 1);
 
 		//this.vertices.push(currPoint.color[0], currPoint.color[1], currPoint.color[2]);
 	    }
@@ -120,18 +120,24 @@ class Planet extends GeometricObject {
 	let z = this.z + this.radius * Math.cos(rotationY);
 
 	/* calculate the tangent vectors */
-	let n1 = vec3.create();
-	let n2 = vec3.create();
-        vec3.set (n1, -Math.sin(rotationX), Math.cos(rotationX), 0);
-        vec3.set (n2, -Math.sin(rotationY) * Math.cos(rotationX),
-                      -Math.sin(rotationY) * Math.sin(rotationX),
-                       Math.cos(rotationY));
-        /* n1 is tangent along major circle, n2 is tangent along the minor circle */
-        vec3.cross (norm, n1, n2);
-        vec3.normalize(norm, norm);
-        /* the next three floats are vertex normal */
+	let origin = vec3.fromValues(0,0,0)
 	
-        
+	let surfacePoint = vec3.fromValues(x,y,z);
+	var norm = vec3.create()
+	vec3.subtract(norm, surfacePoint, origin);
+	vec3.normalize(norm, norm);
+	//norm = norm + surfacePoint;
+	//console.log(norm);
+	// let n1 = vec3.create();
+	// let n2 = vec3.create();
+        // vec3.set (n1, -Math.sin(rotationX), Math.cos(rotationX), 0);
+        // vec3.set (n2, -Math.sin(rotationY) * Math.cos(rotationX),
+        //               -Math.sin(rotationY) * Math.sin(rotationX),
+        //                Math.cos(rotationY));
+        // /* n1 is tangent along major circle, n2 is tangent along the minor circle */
+        // vec3.cross (norm, n1, n2);
+        // vec3.normalize(norm, norm);
+        /* the next three floats are vertex normal */
 
 	this.p5.noiseDetail(16, 0.5)
 
