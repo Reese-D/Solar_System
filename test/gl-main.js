@@ -213,9 +213,8 @@ function main() {
 
 
 	    gl.uniform3iv (isEnabledUnif, lightingComponentEnabled);
-	    objArr = []
-	    objArr.push(new Torus(gl, 1.0, 0.3, 36, 24));
-	    //objArr.push(new Planet(gl,0,0,0,0.5,200,undefined,12312,1,4,0.75,mat4.create()))
+	    //objArr = []
+	    //objArr.push(new Torus(gl, 1.0, 0.3, 36, 24));
 	    //pointLight = new UniSphere(gl, 0.03, 3, yellow, yellow);
 	    //globalAxes = new Axes(gl);
 	    timeStamp = Date.now();
@@ -444,24 +443,19 @@ function drawScene() {
 
     /* Draw the light source (a sphere) using its own coordinate frame */
     //pointLight.draw(posAttr, colAttr, modelUnif, lightCF);
-    objArr.forEach(function(obj){
-	if (typeof obj !== 'undefined') {
-	    /* calculate normal matrix from ringCF */
-	    gl.uniform1i (useLightingUnif, true);
-	    //    gl.disableVertexAttribArray(colAttr);
-	    gl.enableVertexAttribArray(normalAttr);
-	    //obj.draw(posAttr, colAttr, normalAttr, modelUnif, ringCF);
-	    for(key in object_hash){
-	    	object_hash[key].draw(posAttr, colAttr,  normalAttr, modelUnif, ringCF);
-	    }
-	}
-        orbit("planet0");
-        orbit("planet1");
-        orbit("planet2");
-        orbit("planet3");
-        orbit("planet4");
-        orbit("planet5");
-    });
+    ///* calculate normal matrix from ringCF */
+    gl.uniform1i (useLightingUnif, true);
+    //    gl.disableVertexAttribArray(colAttr);
+    gl.enableVertexAttribArray(normalAttr);
+    for(key in object_hash){
+        object_hash[key].draw(posAttr, colAttr,  normalAttr, modelUnif, ringCF);
+    }
+    orbit("planet0");
+    orbit("planet1");
+    orbit("planet2");
+    orbit("planet3");
+    orbit("planet4");
+    orbit("planet5");
 }
 
 function draw3D() {
@@ -477,17 +471,15 @@ function draw3D() {
     gl.uniformMatrix3fv (normalUnif, false, normalMat);
     gl.viewport(0, 0, glCanvas.width/2, glCanvas.height);
     drawScene();
-    objArr.forEach(function(obj){
-	if (typeof obj !== 'undefined') {
-	    gl.uniform1i(useLightingUnif, false);
-	    //    gl.disableVertexAttribArray(normalAttr);
-	    gl.enableVertexAttribArray(colAttr);
-	    if (showNormal)
-		obj.drawNormal(posAttr, colAttr, modelUnif, ringCF);
-	    if (showLightVectors)
-	 	obj.drawVectorsTo(gl, lightPos, posAttr, colAttr, normalAttr, modelUnif, ringCF);
-	}
-    });
+    if (typeof obj !== 'undefined') {
+        gl.uniform1i(useLightingUnif, false);
+        //    gl.disableVertexAttribArray(normalAttr);
+        gl.enableVertexAttribArray(colAttr);
+        if (showNormal)
+	    obj.drawNormal(posAttr, colAttr, modelUnif, ringCF);
+        if (showLightVectors)
+ 	    obj.drawVectorsTo(gl, lightPos, posAttr, colAttr, normalAttr, modelUnif, ringCF);
+    }
 }
 
 function drawTopView() {
