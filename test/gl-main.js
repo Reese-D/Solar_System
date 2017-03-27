@@ -281,7 +281,8 @@ function resizeHandler() {
 function orbit(planet){
     let rotateX = 0.00;
     let rotateY = 0.00;
-    let orbitSpeed = 1;
+    let rotateZ = 0.00;
+    let orbitDistance = 1;
 
     let now = Date.now();
     let elapse = (now - timeStamp)/1000;
@@ -293,46 +294,47 @@ function orbit(planet){
 	return;
     case "planet1":
 	rotateY = 0.5
-	orbitSpeed = 1.6
+	rotateZ = -0.2
+	orbitDistance = 1.6
 	break;
     case "planet2":
-	rotateY = 0.8
-	orbitSpeed = 0.6
+	rotateZ = 0.8
+	orbitDistance = 0.2
 	break;
     case "planet3":
-	orbitSpeed = 0.6
-	rotateY = 0.4
-	roateX = 0.4
+	orbitDistance = 2
+	rotateY = -0.4
+	roateX = 0.9
+	rotaeZ = 0.3
 	break;
     case "planet4":
-	rotateX = 0;
-	rotateY = -0.9;
-	orbitSpeed = 2;
+	rotateX = -0.9;
+	orbitDistance = 0.2;
 	break;
     case "planet5":
-	rotateY = 0.2;
-	orbitSpeed = 1.1
+	rotateY = 0.8;
+	orbitDistance = 1.1
 	break;
     default:
 	break;
     }
-    rotateX = (rotateX * sumElapse) % 2*Math.PI
-    rotateY = (rotateY * sumElapse) % 2*Math.PI
     
-    let x = 0 + orbitSpeed * Math.cos(rotateX) * Math.sin(rotateY);
-    let y = 0 + orbitSpeed * Math.sin(rotateX) * Math.sin(rotateY);
-    let z = 0 + orbitSpeed * Math.cos(rotateY);
-    let axisRot = vec3.fromValues(x,y,z);
-    console.log(axisRot);
+    rad = sumElapse/3 % 2*Math.PI
+    let axisRot = vec3.fromValues(rotateX, rotateY, rotateZ);
+    let tmp = vec3.fromValues(orbitDistance,orbitDistance,orbitDistance);
+    vec3.cross(tmp, tmp, axisRot);
     let crdFrame = object_hash[planet].coordFrame;
     
-    if(planet == "planet2"){
-	mat4.translate(crdFrame, object_hash["planet1"].coordFrame, axisRot);
-    }else if(planet == "planet4"){
-     	mat4.translate(crdFrame, object_hash["planet2"].coordFrame, axisRot);
-     }
-    else{
-	mat4.translate(crdFrame, object_hash["planet0"].coordFrame, axisRot);
+    // if(planet == "planet2"){
+    // 	mat4.rotate(crdFrame, object_hash["planet1"].coordFrame, rad, axisRot);
+    // 	mat4.translate(crdFrame, crdFrame, tmp);
+    // }else
+	if(planet == "planet4"){
+    	mat4.rotate(crdFrame, object_hash["planet2"].coordFrame, rad, axisRot);
+    	mat4.translate(crdFrame, crdFrame, tmp);
+    }else{
+	mat4.rotate(crdFrame, object_hash["planet0"].coordFrame, rad, axisRot);
+     	mat4.translate(crdFrame, crdFrame, tmp);
     }
 
 
@@ -531,6 +533,9 @@ function drawScene() {
 //    let arr = [0.1,0.1,0.1,0.1,0.1,0.1]
     gl.uniform3fv(lightPosUnif, arr);
     for(key in object_hash){
+	mat4.mul (tmpMat, viewMat, object_hash[key].coordFrame);
+	mat3.normalFromMat4 (normalMat, tmpMat);
+	gl.uniformMatrix3fv (normalUnif, false, normalMat);
         object_hash[key].draw(posAttr, colAttr, normalAttr, modelUnif);
     }
     orbit("planet0");
@@ -549,9 +554,6 @@ function draw3D() {
     
     gl.uniformMatrix4fv(projUnif, false, persProjMat);
     gl.uniformMatrix4fv(viewUnif, false, viewMat);
-    mat4.mul (tmpMat, viewMat, ringCF);
-    mat3.normalFromMat4 (normalMat, tmpMat);
-    gl.uniformMatrix3fv (normalUnif, false, normalMat);
     gl.viewport(0, 0, glCanvas.width/2, glCanvas.height);
     drawScene();
     if (typeof obj !== 'undefined') {
