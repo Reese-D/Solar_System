@@ -3,7 +3,7 @@
  */
 
 var gl;
-var glCanvas;
+var glCanvas, textOut;
 var orthoProjMat, persProjMat, viewMat, viewMatInverse, topViewMat,topViewMatInverse, normalMat;
 var ringCF, lightCF, eyePos;
 var axisBuff, tmpMat;
@@ -23,10 +23,14 @@ var shaderProg, redrawNeeded, showNormal, showLightVectors;
 var lightingComponentEnabled = [true, true, true];
 var object_hash;
 var timeStamp;
+var speed = 1;
+var bool = false;
 var sumElapse = 0;
+var copy = copyElapse = 0;
 const DEFAULT_LIST_TEXT = "Select an object";
 function main() {
     glCanvas = document.getElementById("gl-canvas");
+    textOut = document.getElementById("msg");
 
     let normalCheckBox = document.getElementById("shownormal");
     normalCheckBox.addEventListener('change', ev => {
@@ -87,12 +91,6 @@ function main() {
     // greenSlider.addEventListener('input', colorChanged, false);
     // blueSlider.addEventListener('input', colorChanged, false);
 
-    let objxslider = document.getElementById("objx");
-    let objyslider = document.getElementById("objy");
-    let objzslider = document.getElementById("objz");
-    objxslider.addEventListener('input', objPosChanged, false);
-    objyslider.addEventListener('input', objPosChanged, false);
-    objzslider.addEventListener('input', objPosChanged, false);
 
     // let lightxslider = document.getElementById("lightx");
     // let lightyslider = document.getElementById("lighty");
@@ -109,6 +107,7 @@ function main() {
     eyezslider.addEventListener('input', eyePosChanged, false);
 
     gl = WebGLUtils.setupWebGL(glCanvas, null);
+    window.addEventListener("keypress", keyboardHandler, false);
     window.addEventListener("resize", resizeHandler, false);
     ShaderUtils.loadFromFile(gl, "vshader.glsl", "fshader.glsl")
 	.then (prog => {
@@ -171,9 +170,6 @@ function main() {
 	    eyeyslider.value = lightPos[1];
 	    eyezslider.value = lightPos[2];
 	    mat4.fromTranslation(lightCF, lightPos);
-	    lightx.value = lightPos[0];
-	    lighty.value = lightPos[1];
-	    lightz.value = lightPos[2];
 	    //gl.uniform3fv (lightPosUnif, lightPos);
 	    let vertices = [0, 0, 0, 1, 1, 1,
 			    lightPos[0], 0, 0, 1, 1, 1,
@@ -278,6 +274,126 @@ function resizeHandler() {
 
 }
 
+function keyboardHandler(event) {
+    //var unif;
+    // unif = gl.getUniformLocation(getCurrentListObject(), "object");
+    // gl.uniformMatrix4fv(unif, false, ringCF);
+    var translations = [];
+    var rotations = [];
+    var scalings = [];
+    for(let i = 0; i < 3; i++){
+        var current = [0,0,0];
+        for(let k = -1; k < 2; k+=2){
+            current[i] = k
+            translations.push(mat4.fromTranslation(mat4.create(), vec3.fromValues(current[0], current[1], current[2])));
+            rotations.push(mat4.fromRotation(mat4.create(),Math.PI/9, vec3.fromValues(current[0], current[1], current[2])));
+            current[i] = k*0.1 + 1;
+            current[i]--;
+            scalings.push(mat4.fromScaling(mat4.create(), vec3.fromValues(1 + current[0], 1 + current[1], 1 + current[2])));
+        }
+    }
+    let value14 = 0;
+    current_object = getCurrentListObject();
+    if(typeof current_object === 'undefined'){
+        return;
+    }
+    var transition = undefined;
+    switch (event.key) {
+
+    case "x":
+        transition = translations[0]
+        break;
+    case "X":
+        transition = translations[1]
+        break;
+    case "y":
+        transition = translations[2]
+        break;
+    case "Y":
+        transition = translations[3]
+        break;
+    case "z":
+        transition = translations[4]
+        break;
+    case "Z":
+        transition = translations[5]
+        break;
+
+    case "q":
+        transition = rotations[0]
+        break;
+    case "Q":
+        transition = rotations[1]
+        break;
+    case "w":
+        transition = rotations[2]
+        break;
+    case "W":
+        transition = rotations[3]
+        break;
+    case "e":
+        transition = rotations[4]
+        break;
+    case "E":
+        transition = rotations[5]
+        break;
+
+    case "i":
+        transition = scalings[0]
+        break;
+    case "I":
+        transition = scalings[1]
+        break;
+    case "o":
+        transition = scalings[2]
+        break;
+    case "O":
+        transition = scalings[3]
+        break;
+    case "p":
+        transition = scalings[4]
+        break;
+    case "P":
+        transition = scalings[5]
+        break;
+    case "s":
+        if(bool){
+            bool = false;
+        }else{
+            bool = true;
+        }
+        break;
+    case "m":
+	bool = true;
+	value14 = (sumElapse * (speed * 1.05))/speed;
+        speed = speed * 1.05;
+	sumElapse = value14;
+	bool = false;
+        break;
+    case "M":
+	bool = true;
+	value14 = (sumElapse * (speed * .95))/speed;
+        speed = speed * .95;
+	sumElapse = value14;
+	bool = false;
+        break;
+     }
+    if(typeof transition !== 'undefined'){
+        let origin = [];
+        origin.push(current_object.coordFrame[12], current_object.coordFrame[13], current_object.coordFrame[14]);
+        translate_to_origin = mat4.fromTranslation(mat4.create(), vec3.fromValues(origin[0]*-1, origin[1]*-1, origin[2]*-1))
+        mat4.multiply(current_object.coordFrame, translate_to_origin, current_object.coordFrame);
+        mat4.multiply(current_object.coordFrame, transition, current_object.coordFrame);  // ringCF = Trans * ringCF
+        translate_to_origin = mat4.fromTranslation(mat4.create(), vec3.fromValues(origin[0], origin[1], origin[2]))
+        mat4.multiply(current_object.coordFrame, translate_to_origin, current_object.coordFrame);
+        textOut.innerHTML = "Ring origin (" + ringCF[12].toFixed(1) + ", "
+            + ringCF[13].toFixed(1) + ", "
+            + ringCF[14].toFixed(1) + ")";
+    }
+}
+
+
+
 function orbit(planet){
     let rotateX = 0.00;
     let rotateY = 0.00;
@@ -299,10 +415,10 @@ function orbit(planet){
 	break;
     case "planet2":
 	rotateZ = 0.8
-	orbitDistance = 0.2
+	orbitDistance = 0.4
 	break;
     case "planet3":
-	orbitDistance = 2
+	orbitDistance = 1.7
 	rotateY = -0.4
 	roateX = 0.9
 	rotaeZ = 0.3
@@ -317,9 +433,16 @@ function orbit(planet){
 	break;
     default:
 	break;
+    } 
+    //rad = (sumElapse/3 % 2*Math.PI)/speed;
+    rad = sumElapse/speed;
+    if(bool){
+        rad = copy;
+        sumElapse = copyElapse;
+    }else{
+        copy = rad;
+        copyElapse = sumElapse;
     }
-    
-    rad = sumElapse/3 % 2*Math.PI
     let axisRot = vec3.fromValues(rotateX, rotateY, rotateZ);
     let tmp = vec3.fromValues(orbitDistance,orbitDistance,orbitDistance);
     vec3.cross(tmp, tmp, axisRot);
