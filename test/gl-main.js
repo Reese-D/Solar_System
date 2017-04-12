@@ -392,7 +392,8 @@ function keyboardHandler(event) {
     }
 }
 
-
+let lastRad = 0;
+let lastRot = 0;
 
 function orbit(planet){
     let rotateX = 0.00;
@@ -452,12 +453,18 @@ function orbit(planet){
     // 	mat4.rotate(crdFrame, object_hash["planet1"].coordFrame, rad, axisRot);
     // 	mat4.translate(crdFrame, crdFrame, tmp);
     // }else
-	if(planet == "planet4"){
-    	mat4.rotate(crdFrame, object_hash["planet2"].coordFrame, rad, axisRot);
+    if(planet == "planet4"){
+	let tmp_mat = mat4.create()
+	mat4.rotate(tmp_mat, object_hash["planet2"].coordFrame, -lastRad, lastRot);
+    	mat4.rotate(crdFrame, tmp_mat, rad, axisRot);
     	mat4.translate(crdFrame, crdFrame, tmp);
     }else{
 	mat4.rotate(crdFrame, object_hash["planet0"].coordFrame, rad, axisRot);
      	mat4.translate(crdFrame, crdFrame, tmp);
+	if(planet == "planet2"){
+	    lastRad = rad;
+	    lastRot = axisRot;
+	}
     }
 
 
